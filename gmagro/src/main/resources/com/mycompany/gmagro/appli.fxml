@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.sothawo.mapjfx.MapView?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.chart.PieChart?>
+<?import javafx.scene.control.Accordion?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TitledPane?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="1024.0" prefWidth="801.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.mycompany.gmagro.AppliController">
+   <children>
+      <Accordion fx:id="accordion" prefHeight="784.0" prefWidth="627.0">
+        <panes>
+          <TitledPane fx:id="tpHome" animated="false" text="Home">
+               <content>
+                  <AnchorPane prefHeight="200.0" prefWidth="200.0">
+                     <children>
+                        <HBox prefHeight="379.0" prefWidth="600.0">
+                           <children>
+                              <PieChart fx:id="pc_Pers" prefHeight="375.0" prefWidth="431.0" />
+                              <MapView fx:id="mapView" prefHeight="451.0" prefWidth="425.0" />
+                           </children>
+                        </HBox>
+                     </children>
+                  </AnchorPane>
+               </content>
+          </TitledPane>
+          <TitledPane animated="false" text="Sites">
+            <content>
+              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="670.0" prefWidth="625.0" />
+            </content>
+          </TitledPane>
+          <TitledPane animated="false" prefHeight="693.0" prefWidth="627.0" text="Intervenant">
+            <content>
+              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="683.0" prefWidth="875.0">
+                     <children>
+                        <VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="658.0" prefWidth="801.0">
+                           <children>
+                              <HBox prefHeight="351.0" prefWidth="600.0">
+                                 <children>
+                                    <ListView fx:id="lv_etab" onMouseClicked="#onClicEtablissmentSelected" prefHeight="351.0" prefWidth="312.0" />
+                                    <MapView fx:id="mapViewInter" prefHeight="351.0" prefWidth="590.0" />
+                                 </children>
+                              </HBox>
+                              <TableView fx:id="tableViewIntervenant" prefHeight="308.0" prefWidth="600.0">
+                                 <columns>
+                                    <TableColumn fx:id="tableColumnNom" prefWidth="420.0" text="nom" />
+                                    <TableColumn minWidth="0.0" prefWidth="109.0" text="grade" />
+                                    <TableColumn prefWidth="142.0" text="modifier" />
+                                    <TableColumn fx:id="tableColumnSupprimer" prefWidth="129.0" text="supprimer" />
+                                 </columns>
+                                 <VBox.margin>
+                                    <Insets />
+                                 </VBox.margin>
+                              </TableView>
+                           </children>
+                        </VBox>
+                     </children></AnchorPane>
+            </content>
+          </TitledPane>
+            <TitledPane animated="false" prefHeight="835.0" prefWidth="627.0" text="Type Machines">
+               <content>
+                  <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+               </content>
+            </TitledPane>
+        </panes>
+      </Accordion>
+   </children>
+</VBox>
