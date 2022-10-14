@@ -9,7 +9,7 @@ package com.mycompany.gmagro;
  * @author ageneste
  */
 public class Etablissement {
-    private int code;
+    private String code;
     private String libelle;
     private String adr;
     private String cp;
@@ -17,7 +17,7 @@ public class Etablissement {
     private PointGeo p ;
     private int nbPers;
 
-    public Etablissement(int code, String libelle, String adr, String cp, String ville, PointGeo p, int nbPers) {
+    public Etablissement(String code, String libelle, String adr, String cp, String ville, PointGeo p, int nbPers) {
         this.code = code;
         this.libelle = libelle;
         this.adr = adr;
@@ -39,7 +39,7 @@ public class Etablissement {
         return p;
     }
 
-    public int getCode() {
+    public String getCode() {
         return code;
     }
 

@@ -50,8 +50,8 @@
                               <TableView fx:id="tableViewIntervenant" prefHeight="308.0" prefWidth="600.0">
                                  <columns>
                                     <TableColumn fx:id="tableColumnNom" prefWidth="420.0" text="nom" />
-                                    <TableColumn minWidth="0.0" prefWidth="109.0" text="grade" />
-                                    <TableColumn prefWidth="142.0" text="modifier" />
+                                    <TableColumn fx:id="tableColumnGrade" minWidth="0.0" prefWidth="109.0" text="grade" />
+                                    <TableColumn fx:id="tableColumnModifier" prefWidth="142.0" text="modifier" />
                                     <TableColumn fx:id="tableColumnSupprimer" prefWidth="129.0" text="supprimer" />
                                  </columns>
                                  <VBox.margin>

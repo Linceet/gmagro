@@ -9,6 +9,28 @@ package com.mycompany.gmagro;
  * @author ageneste
  */
 public class Role {
+
     private int code;
     private String libelle;
+
+    public Role(int code, String libelle) {
+        this.code = code;
+        this.libelle = libelle;
+    }
+
+    public int getCode() {
+        return code;
+    }
+
+    public String getLibelle() {
+        return libelle;
+    }
+
+    @Override
+    public String toString() {
+        return libelle;
+    }
+
+  
+
 }

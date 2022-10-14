@@ -9,18 +9,24 @@ package com.mycompany.gmagro;
  * @author ageneste
  */
 public class Intervenant {
+    private String mail;
     private String prenom;
     private String nom;
     private boolean actif;
     private String codeEtab;
     private String codeRole;
 
-    public Intervenant(String prenom, String nom, boolean actif, String codeEtab, String codeRole) {
+    public Intervenant(String mail , String prenom, String nom, boolean actif, String codeEtab, String codeRole) {
+        this.mail = mail;
         this.prenom = prenom;
         this.nom = nom;
         this.actif = actif;
         this.codeEtab = codeEtab;
         this.codeRole = codeRole;
+    }  
+
+    public String getMail() {
+        return mail;
     }
 
     public String getPrenom() {
