@@ -10,15 +10,15 @@ package com.mycompany.gmagro;
  */
 public class Role {
 
-    private int code;
+    private String code;
     private String libelle;
 
-    public Role(int code, String libelle) {
+    public Role(String code, String libelle) {
         this.code = code;
         this.libelle = libelle;
     }
 
-    public int getCode() {
+    public String getCode() {
         return code;
     }
 

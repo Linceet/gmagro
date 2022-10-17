@@ -69,7 +69,7 @@ public class Model {
         JSONArray ar = (JSONArray) parser.parse(rep);
         for (int i = 0; i < ar.size(); i++) {
             JSONObject jsono = (JSONObject) ar.get(i);
-            int code = Integer.parseInt(jsono.get("codeRole").toString());
+            String code = jsono.get("codeRole").toString();
             String libelle = jsono.get(("libelle")).toString();
             Role r = new Role(code, libelle);
             lesRoles.add(r);
@@ -85,8 +85,11 @@ public class Model {
             String mail = jsono.get("mail").toString();
             String nom =jsono.get("nom").toString();
             String prenom = jsono.get("prenom").toString();
-            
-            
+            String actif = jsono.get("actif").toString();
+            String codeR = jsono.get("codeRole").toString();
+            String codeE = jsono.get("codeEtab").toString();
+            Intervenant in = new Intervenant(mail, prenom, nom, Boolean.parseBoolean(actif), codeE, codeR);
+            lesinters.add(in);
         }
     }
 

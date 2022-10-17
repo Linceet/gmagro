@@ -8,7 +8,11 @@ import com.sothawo.mapjfx.Coordinate;
 import com.sothawo.mapjfx.MapLabel;
 import com.sothawo.mapjfx.MapView;
 import com.sothawo.mapjfx.Marker;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.Writer;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Optional;
@@ -43,7 +47,7 @@ public class AppliController implements Initializable {
     private final HashMap<Etablissement, Marker> hMapEtabPourMenu = new HashMap<>();
     private final HashMap<Etablissement, Marker> hMapEtabPourIntervenant = new HashMap<>();
     private final ObservableList<Etablissement> listeEt = m.getLesEtabs();
-    private ObservableList<Intervenant> listeIntervenantParEtablissement = FXCollections.observableArrayList();
+    private ObservableList<Intervenant> listeIntervenant = FXCollections.observableArrayList();
 
     @FXML
     private MapView mapView;
@@ -67,6 +71,12 @@ public class AppliController implements Initializable {
     private TableColumn<Intervenant, String> tableColumnGrade;
     @FXML
     private TableColumn<Intervenant, String> tableColumnModifier;
+    @FXML
+    private Button btnAll;
+    @FXML
+    private Button btnAddInterv;
+    @FXML
+    private Button btnImp;
 
     /**
      * Initializes the controller class.
@@ -93,7 +103,8 @@ public class AppliController implements Initializable {
     private void initialiseLvIntervenant() {
         //m.get;
     }
-    private void initialiseRole(){
+
+    private void initialiseRole() {
         try {
             m.getRole();
         } catch (IOException ex) {
@@ -187,15 +198,15 @@ public class AppliController implements Initializable {
 
     @FXML
     private void onClicEtablissmentSelected(MouseEvent event) throws IOException, ParseException {
-        listeIntervenantParEtablissement.clear();
+        listeIntervenant.clear();
         Etablissement e = lv_etab.getSelectionModel().getSelectedItem();
         System.out.println("on passe : " + e.getLibelle());
         m.getIntervenantFromAEtablissement(String.valueOf(e.getCode()));
-        listeIntervenantParEtablissement = m.getLesIntervenantParEtab();
+        listeIntervenant = m.getLesIntervenantParEtab();
         tableColumnNom.setCellValueFactory(new PropertyValueFactory<>("nom"));
-        for (Intervenant i : listeIntervenantParEtablissement) {
-            
-             //********************************************tableColumnSupp button de Suppression*********************************************
+        for (Intervenant i : listeIntervenant) {
+
+            //********************************************tableColumnSupp button de Suppression*********************************************
             Callback<TableColumn<Intervenant, String>, TableCell<Intervenant, String>> btnSupp
                     = //
                     new Callback<TableColumn<Intervenant, String>, TableCell<Intervenant, String>>() {
@@ -229,8 +240,8 @@ public class AppliController implements Initializable {
                     return cell;
                 }
             };
-             //********************************************tableColumnGrade button de grade*********************************************
-            
+            //********************************************tableColumnGrade button de grade*********************************************
+
             Callback<TableColumn<Intervenant, String>, TableCell<Intervenant, String>> btnUpgrade
                     = //
                     new Callback<TableColumn<Intervenant, String>, TableCell<Intervenant, String>>() {
@@ -254,7 +265,7 @@ public class AppliController implements Initializable {
                                     Optional<Role> showAndWait = mdr.showAndWait();
                                     if (showAndWait.isPresent()) {
                                         try {
-                                            m.updateRoleInIntervenant(mail,String.valueOf(showAndWait.get().getCode()));
+                                            m.updateRoleInIntervenant(mail, String.valueOf(showAndWait.get().getCode()));
                                         } catch (IOException ex) {
                                             System.out.println("Error modif de role d'un Intervenant");
                                         }
@@ -290,7 +301,7 @@ public class AppliController implements Initializable {
                                     Intervenant person = getTableView().getItems().get(getIndex());
                                     MyDialogModif mdm = new MyDialogModif(m, person);
                                     mdm.showAndWait();
-                                    });
+                                });
                                 setGraphic(btn);
                                 setText(null);
                             }
@@ -306,8 +317,139 @@ public class AppliController implements Initializable {
 
         }
 
-        tableViewIntervenant.setItems(listeIntervenantParEtablissement);
+        tableViewIntervenant.setItems(listeIntervenant);
 
+    }
+
+    @FXML
+    private void clicAllIntervenant(MouseEvent event) throws IOException, ParseException {
+        listeIntervenant.clear();
+        Etablissement e = lv_etab.getSelectionModel().getSelectedItem();
+        System.out.println("on passe : " + e.getLibelle());
+        m.getIntervenantFromAEtablissement(e.getCode());
+        listeIntervenant = m.getLesIntervenantParEtab();
+        tableColumnNom.setCellValueFactory(new PropertyValueFactory<>("nom"));
+        for (Intervenant i : listeIntervenant) {
+
+            //********************************************tableColumnSupp button de Suppression*********************************************
+            Callback<TableColumn<Intervenant, String>, TableCell<Intervenant, String>> btnSupp
+                    = //
+                    new Callback<TableColumn<Intervenant, String>, TableCell<Intervenant, String>>() {
+                @Override
+                public TableCell call(final TableColumn<Intervenant, String> param) {
+                    final TableCell<Intervenant, String> cell = new TableCell<Intervenant, String>() {
+
+                        final Button btn = new Button("Supprimer");
+
+                        @Override
+                        public void updateItem(String item, boolean empty) {
+                            super.updateItem(item, empty);
+                            if (empty) {
+                                setGraphic(null);
+                                setText(null);
+                            } else {
+                                btn.setOnAction(event -> {
+                                    Intervenant person = getTableView().getItems().get(getIndex());
+                                    String id = person.getMail();
+                                    try {
+                                        m.suppIntervenantById(id);
+                                    } catch (IOException ex) {
+                                        System.out.println("suppression Intervenant: ERROR");
+                                    }
+                                });
+                                setGraphic(btn);
+                                setText(null);
+                            }
+                        }
+                    };
+                    return cell;
+                }
+            };
+            //********************************************tableColumnGrade button de grade*********************************************
+
+            Callback<TableColumn<Intervenant, String>, TableCell<Intervenant, String>> btnUpgrade
+                    = //
+                    new Callback<TableColumn<Intervenant, String>, TableCell<Intervenant, String>>() {
+                @Override
+                public TableCell call(final TableColumn<Intervenant, String> param) {
+                    final TableCell<Intervenant, String> cell = new TableCell<Intervenant, String>() {
+
+                        final Button btn = new Button("grade");
+
+                        @Override
+                        public void updateItem(String item, boolean empty) {
+                            super.updateItem(item, empty);
+                            if (empty) {
+                                setGraphic(null);
+                                setText(null);
+                            } else {
+                                btn.setOnAction(event -> {
+                                    Intervenant person = getTableView().getItems().get(getIndex());
+                                    String mail = person.getMail();
+                                    MyDialogRole mdr = new MyDialogRole(mail, m);
+                                    Optional<Role> showAndWait = mdr.showAndWait();
+                                    if (showAndWait.isPresent()) {
+                                        try {
+                                            m.updateRoleInIntervenant(mail, String.valueOf(showAndWait.get().getCode()));
+                                        } catch (IOException ex) {
+                                            System.out.println("Error modif de role d'un Intervenant");
+                                        }
+                                    }
+
+                                });
+                                setGraphic(btn);
+                                setText(null);
+                            }
+                        }
+                    };
+                    return cell;
+                }
+            };
+            //********************************************tableColumnModifier button de modification*********************************************
+            Callback<TableColumn<Intervenant, String>, TableCell<Intervenant, String>> btnModifier
+                    = //
+                    new Callback<TableColumn<Intervenant, String>, TableCell<Intervenant, String>>() {
+                @Override
+                public TableCell call(final TableColumn<Intervenant, String> param) {
+                    final TableCell<Intervenant, String> cell = new TableCell<Intervenant, String>() {
+
+                        final Button btn = new Button("modifier");
+
+                        @Override
+                        public void updateItem(String item, boolean empty) {
+                            super.updateItem(item, empty);
+                            if (empty) {
+                                setGraphic(null);
+                                setText(null);
+                            } else {
+                                btn.setOnAction(event -> {
+                                    Intervenant person = getTableView().getItems().get(getIndex());
+                                    MyDialogModif mdm = new MyDialogModif(m, person);
+                                    mdm.showAndWait();
+                                });
+                                setGraphic(btn);
+                                setText(null);
+                            }
+                        }
+                    };
+                    return cell;
+                }
+            };
+
+            tableColumnSupprimer.setCellFactory(btnSupp);
+            tableColumnGrade.setCellFactory(btnUpgrade);
+            tableColumnModifier.setCellFactory(btnModifier);
+        }
+    }
+
+    @FXML
+    private void clicAddInterv(MouseEvent event) {
+        
+    }
+
+    @FXML
+    private void clicImport(MouseEvent event) {
+        MyDialogImport mdi = new MyDialogImport(m);
     }
 
 }

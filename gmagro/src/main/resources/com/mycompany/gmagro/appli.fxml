@@ -4,6 +4,7 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.chart.PieChart?>
 <?import javafx.scene.control.Accordion?>
+<?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
@@ -58,6 +59,21 @@
                                     <Insets />
                                  </VBox.margin>
                               </TableView>
+                              <HBox prefHeight="100.0" prefWidth="200.0">
+                                 <children>
+                                    <Button fx:id="btnAddInterv" mnemonicParsing="false" onMouseClicked="#clicAddInterv" text="Add Intervenant">
+                                       <HBox.margin>
+                                          <Insets right="25.0" />
+                                       </HBox.margin>
+                                    </Button>
+                                    <Button fx:id="btnAll" mnemonicParsing="false" onMouseClicked="#clicAllIntervenant" text="Afficher tout les invervenant ">
+                                       <HBox.margin>
+                                          <Insets right="25.0" />
+                                       </HBox.margin>
+                                    </Button>
+                                    <Button fx:id="btnImp" mnemonicParsing="false" onMouseClicked="#clicImport" text="ExportCVS" />
+                                 </children>
+                              </HBox>
                            </children>
                         </VBox>
                      </children></AnchorPane>
