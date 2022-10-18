@@ -42,13 +42,13 @@ import org.json.simple.parser.ParseException;
  * @author ageneste
  */
 public class AppliController implements Initializable {
-
+    
     private Model m = new Model();
     private final HashMap<Etablissement, Marker> hMapEtabPourMenu = new HashMap<>();
     private final HashMap<Etablissement, Marker> hMapEtabPourIntervenant = new HashMap<>();
     private final ObservableList<Etablissement> listeEt = m.getLesEtabs();
     private ObservableList<Intervenant> listeIntervenant = FXCollections.observableArrayList();
-
+    
     @FXML
     private MapView mapView;
     @FXML
@@ -83,11 +83,13 @@ public class AppliController implements Initializable {
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
+        tableColumnNom.setCellValueFactory(new PropertyValueFactory<>("nom"));
+        prepareButtons();
         initialiseEtablissement();
         initialiseMenu();
         initialiseMapIntervenant();
         initialiseRole();
-
+        
     }
 
     //**************************************remplissage des liste********************************************
@@ -99,11 +101,11 @@ public class AppliController implements Initializable {
             Logger.getLogger(AppliController.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-
+    
     private void initialiseLvIntervenant() {
         //m.get;
     }
-
+    
     private void initialiseRole() {
         try {
             m.getRole();
@@ -119,7 +121,7 @@ public class AppliController implements Initializable {
         initMapMenu();
         loadPiechart();
     }
-
+    
     private void initialiseMapIntervenant() {
         initMapIntervenant();
         loadLvEtab();
@@ -133,7 +135,7 @@ public class AppliController implements Initializable {
             }
         });
         mapView.initialize();
-
+        
         for (Etablissement e : listeEt) {
             Marker mar = Marker.createProvided(Marker.Provided.RED).setVisible(true);
             Coordinate position = new Coordinate(e.getP().getLat(), e.getP().getLng());
@@ -144,7 +146,7 @@ public class AppliController implements Initializable {
         }
         //refreshVisibility(listeEt);
     }
-
+    
     private void afterMapMenuIsInitialized() {
         mapView.setZoom(5);
         for (Marker m : hMapEtabPourMenu.values()) {
@@ -154,7 +156,7 @@ public class AppliController implements Initializable {
         position = new Coordinate(45.46d, 02.57d);
         mapView.setCenter(position);
     }
-
+    
     private void initMapIntervenant() {
         mapViewInter.initializedProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue) {
@@ -162,7 +164,7 @@ public class AppliController implements Initializable {
             }
         });
         mapViewInter.initialize();
-
+        
         for (Etablissement e : listeEt) {
             Marker marInter = Marker.createProvided(Marker.Provided.RED).setVisible(true);
             Coordinate position = new Coordinate(e.getP().getLat(), e.getP().getLng());
@@ -172,7 +174,7 @@ public class AppliController implements Initializable {
             hMapEtabPourIntervenant.put(e, marInter);
         }
     }
-
+    
     private void afterMapIntervenantIsInitialized() {
         mapViewInter.setZoom(5);
         for (Marker marInter : hMapEtabPourIntervenant.values()) {
@@ -182,7 +184,7 @@ public class AppliController implements Initializable {
         position = new Coordinate(45.46d, 02.57d);
         mapViewInter.setCenter(position);
     }
-
+    
     private void loadPiechart() {
         for (Etablissement e : listeEt) {
             String key = e.toString();
@@ -191,11 +193,11 @@ public class AppliController implements Initializable {
             pc_Pers.setLabelsVisible(true);
         }
     }
-
+    
     private void loadLvEtab() {
         lv_etab.setItems(listeEt);
     }
-
+    
     @FXML
     private void onClicEtablissmentSelected(MouseEvent event) throws IOException, ParseException {
         listeIntervenant.clear();
@@ -203,253 +205,143 @@ public class AppliController implements Initializable {
         System.out.println("on passe : " + e.getLibelle());
         m.getIntervenantFromAEtablissement(String.valueOf(e.getCode()));
         listeIntervenant = m.getLesIntervenantParEtab();
-        tableColumnNom.setCellValueFactory(new PropertyValueFactory<>("nom"));
-        for (Intervenant i : listeIntervenant) {
-
-            //********************************************tableColumnSupp button de Suppression*********************************************
-            Callback<TableColumn<Intervenant, String>, TableCell<Intervenant, String>> btnSupp
-                    = //
-                    new Callback<TableColumn<Intervenant, String>, TableCell<Intervenant, String>>() {
-                @Override
-                public TableCell call(final TableColumn<Intervenant, String> param) {
-                    final TableCell<Intervenant, String> cell = new TableCell<Intervenant, String>() {
-
-                        final Button btn = new Button("Supprimer");
-
-                        @Override
-                        public void updateItem(String item, boolean empty) {
-                            super.updateItem(item, empty);
-                            if (empty) {
-                                setGraphic(null);
-                                setText(null);
-                            } else {
-                                btn.setOnAction(event -> {
-                                    Intervenant person = getTableView().getItems().get(getIndex());
-                                    String id = person.getMail();
-                                    try {
-                                        m.suppIntervenantById(id);
-                                    } catch (IOException ex) {
-                                        System.out.println("suppression Intervenant: ERROR");
-                                    }
-                                });
-                                setGraphic(btn);
-                                setText(null);
-                            }
-                        }
-                    };
-                    return cell;
-                }
-            };
-            //********************************************tableColumnGrade button de grade*********************************************
-
-            Callback<TableColumn<Intervenant, String>, TableCell<Intervenant, String>> btnUpgrade
-                    = //
-                    new Callback<TableColumn<Intervenant, String>, TableCell<Intervenant, String>>() {
-                @Override
-                public TableCell call(final TableColumn<Intervenant, String> param) {
-                    final TableCell<Intervenant, String> cell = new TableCell<Intervenant, String>() {
-
-                        final Button btn = new Button("grade");
-
-                        @Override
-                        public void updateItem(String item, boolean empty) {
-                            super.updateItem(item, empty);
-                            if (empty) {
-                                setGraphic(null);
-                                setText(null);
-                            } else {
-                                btn.setOnAction(event -> {
-                                    Intervenant person = getTableView().getItems().get(getIndex());
-                                    String mail = person.getMail();
-                                    MyDialogRole mdr = new MyDialogRole(mail, m);
-                                    Optional<Role> showAndWait = mdr.showAndWait();
-                                    if (showAndWait.isPresent()) {
-                                        try {
-                                            m.updateRoleInIntervenant(mail, String.valueOf(showAndWait.get().getCode()));
-                                        } catch (IOException ex) {
-                                            System.out.println("Error modif de role d'un Intervenant");
-                                        }
-                                    }
-
-                                });
-                                setGraphic(btn);
-                                setText(null);
-                            }
-                        }
-                    };
-                    return cell;
-                }
-            };
-            //********************************************tableColumnModifier button de modification*********************************************
-            Callback<TableColumn<Intervenant, String>, TableCell<Intervenant, String>> btnModifier
-                    = //
-                    new Callback<TableColumn<Intervenant, String>, TableCell<Intervenant, String>>() {
-                @Override
-                public TableCell call(final TableColumn<Intervenant, String> param) {
-                    final TableCell<Intervenant, String> cell = new TableCell<Intervenant, String>() {
-
-                        final Button btn = new Button("modifier");
-
-                        @Override
-                        public void updateItem(String item, boolean empty) {
-                            super.updateItem(item, empty);
-                            if (empty) {
-                                setGraphic(null);
-                                setText(null);
-                            } else {
-                                btn.setOnAction(event -> {
-                                    Intervenant person = getTableView().getItems().get(getIndex());
-                                    MyDialogModif mdm = new MyDialogModif(m, person);
-                                    mdm.showAndWait();
-                                });
-                                setGraphic(btn);
-                                setText(null);
-                            }
-                        }
-                    };
-                    return cell;
-                }
-            };
-
-            tableColumnSupprimer.setCellFactory(btnSupp);
-            tableColumnGrade.setCellFactory(btnUpgrade);
-            tableColumnModifier.setCellFactory(btnModifier);
-
-        }
-
+        
+        
         tableViewIntervenant.setItems(listeIntervenant);
-
+        
     }
+    
+    private void prepareButtons() {
+        //********************************************tableColumnSupp button de Suppression*********************************************
+        Callback<TableColumn<Intervenant, String>, TableCell<Intervenant, String>> btnSupp
+                = //
+                new Callback<TableColumn<Intervenant, String>, TableCell<Intervenant, String>>() {
+            @Override
+            public TableCell call(final TableColumn<Intervenant, String> param) {
+                final TableCell<Intervenant, String> cell = new TableCell<Intervenant, String>() {
+                    
+                    final Button btn = new Button("Supprimer");
+                    
+                    @Override
+                    public void updateItem(String item, boolean empty) {
+                        super.updateItem(item, empty);
+                        if (empty) {
+                            setGraphic(null);
+                            setText(null);
+                        } else {
+                            btn.setOnAction(event -> {
+                                Intervenant person = getTableView().getItems().get(getIndex());
+                                String id = person.getMail();
+                                try {
+                                    m.suppIntervenantById(id);
+                                } catch (IOException ex) {
+                                    System.out.println("suppression Intervenant: ERROR");
+                                }
+                            });
+                            setGraphic(btn);
+                            setText(null);
+                        }
+                    }
+                };
+                return cell;
+            }
+        };
+        //********************************************tableColumnGrade button de grade*********************************************
 
+        Callback<TableColumn<Intervenant, String>, TableCell<Intervenant, String>> btnUpgrade
+                = //
+                new Callback<TableColumn<Intervenant, String>, TableCell<Intervenant, String>>() {
+            @Override
+            public TableCell call(final TableColumn<Intervenant, String> param) {
+                final TableCell<Intervenant, String> cell = new TableCell<Intervenant, String>() {
+                    
+                    final Button btn = new Button("grade");
+                    
+                    @Override
+                    public void updateItem(String item, boolean empty) {
+                        super.updateItem(item, empty);
+                        if (empty) {
+                            setGraphic(null);
+                            setText(null);
+                        } else {
+                            btn.setOnAction(event -> {
+                                Intervenant person = getTableView().getItems().get(getIndex());
+                                String mail = person.getMail();
+                                MyDialogRole mdr = new MyDialogRole(mail, m);
+                                Optional<Role> showAndWait = mdr.showAndWait();
+                                if (showAndWait.isPresent()) {
+                                    try {
+                                        m.updateRoleInIntervenant(mail, String.valueOf(showAndWait.get().getCode()));
+                                    } catch (IOException ex) {
+                                        System.out.println("Error modif de role d'un Intervenant");
+                                    }
+                                }
+                                
+                            });
+                            setGraphic(btn);
+                            setText(null);
+                        }
+                    }
+                };
+                return cell;
+            }
+        };
+        //********************************************tableColumnModifier button de modification*********************************************
+        Callback<TableColumn<Intervenant, String>, TableCell<Intervenant, String>> btnModifier
+                = //
+                new Callback<TableColumn<Intervenant, String>, TableCell<Intervenant, String>>() {
+            @Override
+            public TableCell call(final TableColumn<Intervenant, String> param) {
+                final TableCell<Intervenant, String> cell = new TableCell<Intervenant, String>() {
+                    
+                    final Button btn = new Button("modifier");
+                    
+                    @Override
+                    public void updateItem(String item, boolean empty) {
+                        super.updateItem(item, empty);
+                        if (empty) {
+                            setGraphic(null);
+                            setText(null);
+                        } else {
+                            btn.setOnAction(event -> {
+                                Intervenant person = getTableView().getItems().get(getIndex());
+                                MyDialogModif mdm = new MyDialogModif(m, person);
+                                mdm.showAndWait();
+                            });
+                            setGraphic(btn);
+                            setText(null);
+                        }
+                    }
+                };
+                return cell;
+            }
+        };
+        
+        tableColumnSupprimer.setCellFactory(btnSupp);
+        tableColumnGrade.setCellFactory(btnUpgrade);
+        tableColumnModifier.setCellFactory(btnModifier);
+    }
+    
     @FXML
     private void clicAllIntervenant(MouseEvent event) throws IOException, ParseException {
         listeIntervenant.clear();
-        Etablissement e = lv_etab.getSelectionModel().getSelectedItem();
-        System.out.println("on passe : " + e.getLibelle());
-        m.getIntervenantFromAEtablissement(e.getCode());
-        listeIntervenant = m.getLesIntervenantParEtab();
-        tableColumnNom.setCellValueFactory(new PropertyValueFactory<>("nom"));
-        for (Intervenant i : listeIntervenant) {
-
-            //********************************************tableColumnSupp button de Suppression*********************************************
-            Callback<TableColumn<Intervenant, String>, TableCell<Intervenant, String>> btnSupp
-                    = //
-                    new Callback<TableColumn<Intervenant, String>, TableCell<Intervenant, String>>() {
-                @Override
-                public TableCell call(final TableColumn<Intervenant, String> param) {
-                    final TableCell<Intervenant, String> cell = new TableCell<Intervenant, String>() {
-
-                        final Button btn = new Button("Supprimer");
-
-                        @Override
-                        public void updateItem(String item, boolean empty) {
-                            super.updateItem(item, empty);
-                            if (empty) {
-                                setGraphic(null);
-                                setText(null);
-                            } else {
-                                btn.setOnAction(event -> {
-                                    Intervenant person = getTableView().getItems().get(getIndex());
-                                    String id = person.getMail();
-                                    try {
-                                        m.suppIntervenantById(id);
-                                    } catch (IOException ex) {
-                                        System.out.println("suppression Intervenant: ERROR");
-                                    }
-                                });
-                                setGraphic(btn);
-                                setText(null);
-                            }
-                        }
-                    };
-                    return cell;
-                }
-            };
-            //********************************************tableColumnGrade button de grade*********************************************
-
-            Callback<TableColumn<Intervenant, String>, TableCell<Intervenant, String>> btnUpgrade
-                    = //
-                    new Callback<TableColumn<Intervenant, String>, TableCell<Intervenant, String>>() {
-                @Override
-                public TableCell call(final TableColumn<Intervenant, String> param) {
-                    final TableCell<Intervenant, String> cell = new TableCell<Intervenant, String>() {
-
-                        final Button btn = new Button("grade");
-
-                        @Override
-                        public void updateItem(String item, boolean empty) {
-                            super.updateItem(item, empty);
-                            if (empty) {
-                                setGraphic(null);
-                                setText(null);
-                            } else {
-                                btn.setOnAction(event -> {
-                                    Intervenant person = getTableView().getItems().get(getIndex());
-                                    String mail = person.getMail();
-                                    MyDialogRole mdr = new MyDialogRole(mail, m);
-                                    Optional<Role> showAndWait = mdr.showAndWait();
-                                    if (showAndWait.isPresent()) {
-                                        try {
-                                            m.updateRoleInIntervenant(mail, String.valueOf(showAndWait.get().getCode()));
-                                        } catch (IOException ex) {
-                                            System.out.println("Error modif de role d'un Intervenant");
-                                        }
-                                    }
-
-                                });
-                                setGraphic(btn);
-                                setText(null);
-                            }
-                        }
-                    };
-                    return cell;
-                }
-            };
-            //********************************************tableColumnModifier button de modification*********************************************
-            Callback<TableColumn<Intervenant, String>, TableCell<Intervenant, String>> btnModifier
-                    = //
-                    new Callback<TableColumn<Intervenant, String>, TableCell<Intervenant, String>>() {
-                @Override
-                public TableCell call(final TableColumn<Intervenant, String> param) {
-                    final TableCell<Intervenant, String> cell = new TableCell<Intervenant, String>() {
-
-                        final Button btn = new Button("modifier");
-
-                        @Override
-                        public void updateItem(String item, boolean empty) {
-                            super.updateItem(item, empty);
-                            if (empty) {
-                                setGraphic(null);
-                                setText(null);
-                            } else {
-                                btn.setOnAction(event -> {
-                                    Intervenant person = getTableView().getItems().get(getIndex());
-                                    MyDialogModif mdm = new MyDialogModif(m, person);
-                                    mdm.showAndWait();
-                                });
-                                setGraphic(btn);
-                                setText(null);
-                            }
-                        }
-                    };
-                    return cell;
-                }
-            };
-
-            tableColumnSupprimer.setCellFactory(btnSupp);
-            tableColumnGrade.setCellFactory(btnUpgrade);
-            tableColumnModifier.setCellFactory(btnModifier);
-        }
+        m.getAllIntervenant();
+        listeIntervenant = m.getLesinters();
+        tableViewIntervenant.setItems(listeIntervenant);
+        lv_etab.getSelectionModel().clearSelection();
     }
-
+    
     @FXML
     private void clicAddInterv(MouseEvent event) {
-        
+        MyDialogAddinterv mdai = new MyDialogAddinterv(m);
+        mdai.showAndWait();
     }
-
+    
     @FXML
     private void clicImport(MouseEvent event) {
         MyDialogImport mdi = new MyDialogImport(m);
+        mdi.showAndWait();
     }
 
+    
 }

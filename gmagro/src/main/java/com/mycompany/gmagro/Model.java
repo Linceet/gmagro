@@ -76,14 +76,14 @@ public class Model {
         }
 
     }
-    
-    public void getAllIntervenant() throws IOException, ParseException{
+
+    public void getAllIntervenant() throws IOException, ParseException {
         String rep = ws.get("uc=intervenant");
         JSONArray ar = (JSONArray) parser.parse(rep);
         for (int i = 0; i < ar.size(); i++) {
             JSONObject jsono = (JSONObject) ar.get(i);
             String mail = jsono.get("mail").toString();
-            String nom =jsono.get("nom").toString();
+            String nom = jsono.get("nom").toString();
             String prenom = jsono.get("prenom").toString();
             String actif = jsono.get("actif").toString();
             String codeR = jsono.get("codeRole").toString();
@@ -91,6 +91,13 @@ public class Model {
             Intervenant in = new Intervenant(mail, prenom, nom, Boolean.parseBoolean(actif), codeE, codeR);
             lesinters.add(in);
         }
+    }
+
+    public int addIntervenant(String mail, String mdp, String prenom, String nom, int actif, String codeRole, String codeEtab) throws IOException {
+        String rep = ws.get("uc=addInterv&mail=" + mail + "&mdp=" + mdp + "&prenom=" + prenom + "&nom=" + nom + "&actif=" + actif + "&codeR=" + codeRole + "&codeE=" + codeEtab);
+        int r = Integer.parseInt(rep);
+        System.out.println(r);
+        return r;
     }
 
     public void updateRoleInIntervenant(String mail, String codeRole) throws IOException {
@@ -109,8 +116,8 @@ public class Model {
             String mail = jso.get("mail").toString();
             String nom = jso.get("nom").toString();
             String prenom = jso.get("prenom").toString();
-            int valActif = Integer.parseInt(jso.get("actif").toString()) ;
-            boolean actif = valActif==0 ? false : true ;
+            int valActif = Integer.parseInt(jso.get("actif").toString());
+            boolean actif = valActif == 0 ? false : true;
             System.out.println("Actif :" + actif);
             String codeE = jso.get("codeEtab").toString();
             String codeR = jso.get("codeRole").toString();
@@ -150,6 +157,11 @@ public class Model {
     public void setLesinters(ObservableList<Intervenant> lesinters) {
         this.lesinters = lesinters;
     }
+
+    public ObservableList<Intervenant> getLesinters() {
+        return lesinters;
+    }
+    
     
 
 }

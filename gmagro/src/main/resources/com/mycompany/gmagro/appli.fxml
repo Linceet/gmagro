@@ -71,7 +71,7 @@
                                           <Insets right="25.0" />
                                        </HBox.margin>
                                     </Button>
-                                    <Button fx:id="btnImp" mnemonicParsing="false" onMouseClicked="#clicImport" text="ExportCVS" />
+                                    <Button fx:id="btnImp" mnemonicParsing="false" onMouseClicked="#clicImport" text="ImportCVS" />
                                  </children>
                               </HBox>
                            </children>
