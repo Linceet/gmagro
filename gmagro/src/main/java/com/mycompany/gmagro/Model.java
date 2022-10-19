@@ -30,6 +30,7 @@ public class Model {
     private ObservableList<Intervenant> lesIntervenantParEtab = FXCollections.observableArrayList();
     private ObservableList<Role> lesRoles = FXCollections.observableArrayList();
     private ObservableList<Intervenant> lesinters = FXCollections.observableArrayList();
+    private ObservableList<Etablissement> toutLesEtabs = FXCollections.observableArrayList();
 
     public Model() {
         if (ws == null) {
@@ -131,6 +132,37 @@ public class Model {
         ws.get("uc=suppIntervenant&mail=" + mail);
     }
 
+    public void allEtabs() throws IOException, ParseException {
+        String rep = ws.get("uc=etablissement");
+        JSONArray ar = (JSONArray) parser.parse(rep);
+        for (int i = 0; i < ar.size(); i++) {
+            JSONObject jsono = (JSONObject) ar.get(i);
+            String code = jsono.get("codeEtab").toString();
+            String lib = jsono.get("libelle").toString();
+            String ad = jsono.get("adrs").toString();
+            String cp = jsono.get("cp").toString();
+            String ville = jsono.get("ville").toString();
+            String lon = jsono.get("lng").toString();
+            String lat = jsono.get("lat").toString();
+            PointGeo p = new PointGeo(Double.parseDouble(lat), Double.parseDouble(lon));
+            Etablissement e = new Etablissement(code, lib, ad, cp, ville, p, 0);
+            toutLesEtabs.add(e);
+
+        }
+    }
+
+    void suppEtabissementById(String id) throws IOException {
+        ws.get("uc=suppEtablissement&id=" + id);
+    }
+
+    public void updateEtablissement(String code, String adr, String cp, String lib, String ville) throws IOException {
+        ws.get("uc=modifEtablissement&code=" + code + "&adr=" + adr + "&cp=" + cp + "&lib=" + lib + "&ville=" + ville);
+    }
+
+    void addEtablissement(String adr, String cp, String lib, String ville, String lng, String lat) throws IOException {
+        ws.get("uc=addEtablissement&adr=" + adr + "&cp=" + cp + "&lib=" + lib + "&ville=" + ville + "&lng=" + lng + "&lat=" + lat);
+    }
+
     public void changer(String cont) throws IOException {
         switch (cont) {
             case "appli":
@@ -161,7 +193,9 @@ public class Model {
     public ObservableList<Intervenant> getLesinters() {
         return lesinters;
     }
-    
-    
+
+    public ObservableList<Etablissement> getToutLesEtabs() {
+        return toutLesEtabs;
+    }
 
 }

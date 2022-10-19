@@ -42,13 +42,14 @@ import org.json.simple.parser.ParseException;
  * @author ageneste
  */
 public class AppliController implements Initializable {
-    
+
     private Model m = new Model();
     private final HashMap<Etablissement, Marker> hMapEtabPourMenu = new HashMap<>();
     private final HashMap<Etablissement, Marker> hMapEtabPourIntervenant = new HashMap<>();
     private final ObservableList<Etablissement> listeEt = m.getLesEtabs();
-    private ObservableList<Intervenant> listeIntervenant = FXCollections.observableArrayList();
-    
+    private ObservableList<Intervenant> listeIntervenant = m.getLesinters();
+    private ObservableList<Etablissement> listeEtabli = FXCollections.observableArrayList();
+
     @FXML
     private MapView mapView;
     @FXML
@@ -77,19 +78,38 @@ public class AppliController implements Initializable {
     private Button btnAddInterv;
     @FXML
     private Button btnImp;
+    @FXML
+    private MapView mvEtab;
+    @FXML
+    private TableColumn<Etablissement, String> tablecolumnAdrs;
+    @FXML
+    private TableColumn<Etablissement, String> tablecolumnCp;
+    @FXML
+    private TableColumn<Etablissement, String> tablecolumnVille;
+    @FXML
+    private TableColumn<Etablissement, String> tablecolumnModif;
+    @FXML
+    private TableColumn<Etablissement, String> tablecolumnSupp;
+    @FXML
+    private Button btnAjouEtab;
+    @FXML
+    private TableView<Etablissement> tableViewEtablissement;
 
     /**
      * Initializes the controller class.
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        tableColumnNom.setCellValueFactory(new PropertyValueFactory<>("nom"));
-        prepareButtons();
+        initialiseTvEtablissement();
+        initialiseTvIntervenant();
+        prepareButtonEtablissement();
+        prepareButtonsIntervenant();
         initialiseEtablissement();
         initialiseMenu();
+        initMapEtablissement();
         initialiseMapIntervenant();
         initialiseRole();
-        
+
     }
 
     //**************************************remplissage des liste********************************************
@@ -101,11 +121,27 @@ public class AppliController implements Initializable {
             Logger.getLogger(AppliController.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    
-    private void initialiseLvIntervenant() {
-        //m.get;
+
+    private void initialiseTvIntervenant() {
+        tableColumnNom.setCellValueFactory(new PropertyValueFactory<>("nom"));
+        tableViewIntervenant.setItems(listeIntervenant);
+
     }
-    
+
+    private void initialiseTvEtablissement() {
+        try {
+            m.allEtabs();
+            listeEtabli=m.getToutLesEtabs();
+        } catch (IOException | ParseException ex) {
+            Logger.getLogger(AppliController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        tableViewEtablissement.setItems(listeEtabli);
+        tablecolumnAdrs.setCellValueFactory(new PropertyValueFactory<>("adr"));
+        tablecolumnCp.setCellValueFactory(new PropertyValueFactory<>("cp"));
+        tablecolumnVille.setCellValueFactory(new PropertyValueFactory<>("ville"));
+
+    }
+
     private void initialiseRole() {
         try {
             m.getRole();
@@ -121,7 +157,7 @@ public class AppliController implements Initializable {
         initMapMenu();
         loadPiechart();
     }
-    
+
     private void initialiseMapIntervenant() {
         initMapIntervenant();
         loadLvEtab();
@@ -135,7 +171,7 @@ public class AppliController implements Initializable {
             }
         });
         mapView.initialize();
-        
+
         for (Etablissement e : listeEt) {
             Marker mar = Marker.createProvided(Marker.Provided.RED).setVisible(true);
             Coordinate position = new Coordinate(e.getP().getLat(), e.getP().getLng());
@@ -146,7 +182,7 @@ public class AppliController implements Initializable {
         }
         //refreshVisibility(listeEt);
     }
-    
+
     private void afterMapMenuIsInitialized() {
         mapView.setZoom(5);
         for (Marker m : hMapEtabPourMenu.values()) {
@@ -156,7 +192,7 @@ public class AppliController implements Initializable {
         position = new Coordinate(45.46d, 02.57d);
         mapView.setCenter(position);
     }
-    
+
     private void initMapIntervenant() {
         mapViewInter.initializedProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue) {
@@ -164,7 +200,7 @@ public class AppliController implements Initializable {
             }
         });
         mapViewInter.initialize();
-        
+
         for (Etablissement e : listeEt) {
             Marker marInter = Marker.createProvided(Marker.Provided.RED).setVisible(true);
             Coordinate position = new Coordinate(e.getP().getLat(), e.getP().getLng());
@@ -174,7 +210,7 @@ public class AppliController implements Initializable {
             hMapEtabPourIntervenant.put(e, marInter);
         }
     }
-    
+
     private void afterMapIntervenantIsInitialized() {
         mapViewInter.setZoom(5);
         for (Marker marInter : hMapEtabPourIntervenant.values()) {
@@ -184,7 +220,35 @@ public class AppliController implements Initializable {
         position = new Coordinate(45.46d, 02.57d);
         mapViewInter.setCenter(position);
     }
-    
+
+    private void initMapEtablissement() {
+        mvEtab.initializedProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue) {
+                afterMapEtablissementIsInitialized();
+            }
+        });
+        mvEtab.initialize();
+
+        for (Etablissement e : listeEt) {
+            Marker marInter = Marker.createProvided(Marker.Provided.RED).setVisible(true);
+            Coordinate position = new Coordinate(e.getP().getLat(), e.getP().getLng());
+            marInter.setPosition(position);
+            MapLabel mapLabel = new MapLabel(e.toString());
+            marInter.attachLabel(mapLabel);
+            hMapEtabPourIntervenant.put(e, marInter);
+        }
+    }
+
+    private void afterMapEtablissementIsInitialized() {
+        mvEtab.setZoom(5);
+        for (Marker marInter : hMapEtabPourIntervenant.values()) {
+            mvEtab.addMarker(marInter);
+        }
+        Coordinate position;
+        position = new Coordinate(45.46d, 02.57d);
+        mvEtab.setCenter(position);
+    }
+
     private void loadPiechart() {
         for (Etablissement e : listeEt) {
             String key = e.toString();
@@ -193,11 +257,11 @@ public class AppliController implements Initializable {
             pc_Pers.setLabelsVisible(true);
         }
     }
-    
+
     private void loadLvEtab() {
         lv_etab.setItems(listeEt);
     }
-    
+
     @FXML
     private void onClicEtablissmentSelected(MouseEvent event) throws IOException, ParseException {
         listeIntervenant.clear();
@@ -205,13 +269,12 @@ public class AppliController implements Initializable {
         System.out.println("on passe : " + e.getLibelle());
         m.getIntervenantFromAEtablissement(String.valueOf(e.getCode()));
         listeIntervenant = m.getLesIntervenantParEtab();
-        
-        
+
         tableViewIntervenant.setItems(listeIntervenant);
-        
+
     }
-    
-    private void prepareButtons() {
+
+    private void prepareButtonsIntervenant() {
         //********************************************tableColumnSupp button de Suppression*********************************************
         Callback<TableColumn<Intervenant, String>, TableCell<Intervenant, String>> btnSupp
                 = //
@@ -219,9 +282,9 @@ public class AppliController implements Initializable {
             @Override
             public TableCell call(final TableColumn<Intervenant, String> param) {
                 final TableCell<Intervenant, String> cell = new TableCell<Intervenant, String>() {
-                    
+
                     final Button btn = new Button("Supprimer");
-                    
+
                     @Override
                     public void updateItem(String item, boolean empty) {
                         super.updateItem(item, empty);
@@ -254,9 +317,9 @@ public class AppliController implements Initializable {
             @Override
             public TableCell call(final TableColumn<Intervenant, String> param) {
                 final TableCell<Intervenant, String> cell = new TableCell<Intervenant, String>() {
-                    
+
                     final Button btn = new Button("grade");
-                    
+
                     @Override
                     public void updateItem(String item, boolean empty) {
                         super.updateItem(item, empty);
@@ -276,7 +339,7 @@ public class AppliController implements Initializable {
                                         System.out.println("Error modif de role d'un Intervenant");
                                     }
                                 }
-                                
+
                             });
                             setGraphic(btn);
                             setText(null);
@@ -293,9 +356,9 @@ public class AppliController implements Initializable {
             @Override
             public TableCell call(final TableColumn<Intervenant, String> param) {
                 final TableCell<Intervenant, String> cell = new TableCell<Intervenant, String>() {
-                    
+
                     final Button btn = new Button("modifier");
-                    
+
                     @Override
                     public void updateItem(String item, boolean empty) {
                         super.updateItem(item, empty);
@@ -316,12 +379,12 @@ public class AppliController implements Initializable {
                 return cell;
             }
         };
-        
+
         tableColumnSupprimer.setCellFactory(btnSupp);
         tableColumnGrade.setCellFactory(btnUpgrade);
         tableColumnModifier.setCellFactory(btnModifier);
     }
-    
+
     @FXML
     private void clicAllIntervenant(MouseEvent event) throws IOException, ParseException {
         listeIntervenant.clear();
@@ -330,18 +393,98 @@ public class AppliController implements Initializable {
         tableViewIntervenant.setItems(listeIntervenant);
         lv_etab.getSelectionModel().clearSelection();
     }
-    
+
     @FXML
     private void clicAddInterv(MouseEvent event) {
         MyDialogAddinterv mdai = new MyDialogAddinterv(m);
         mdai.showAndWait();
     }
-    
+
     @FXML
     private void clicImport(MouseEvent event) {
         MyDialogImport mdi = new MyDialogImport(m);
         mdi.showAndWait();
     }
 
+    //*****************************************************ETABLISSEMENT*************************************
     
+    private void prepareButtonEtablissement(){
+        
+        Callback<TableColumn<Etablissement, String>, TableCell<Etablissement, String>> btnSupp
+                = //
+                new Callback<TableColumn<Etablissement, String>, TableCell<Etablissement, String>>() {
+            @Override
+            public TableCell call(final TableColumn<Etablissement, String> param) {
+                final TableCell<Etablissement, String> cell = new TableCell<Etablissement, String>() {
+
+                    final Button btn = new Button("Supprimer");
+
+                    @Override
+                    public void updateItem(String item, boolean empty) {
+                        super.updateItem(item, empty);
+                        if (empty) {
+                            setGraphic(null);
+                            setText(null);
+                        } else {
+                            btn.setOnAction(event -> {
+                                Etablissement etablissement = getTableView().getItems().get(getIndex());
+                                String id = etablissement.getCode();
+                                try {
+                                    m.suppEtabissementById(id);
+                                } catch (IOException ex) {
+                                    Logger.getLogger(AppliController.class.getName()).log(Level.SEVERE, null, ex);
+                                }
+                            });
+                            setGraphic(btn);
+                            setText(null);
+                        }
+                    }
+                };
+                return cell;
+            }
+        };
+        Callback<TableColumn<Etablissement, String>, TableCell<Etablissement, String>> btnModifier
+                = //
+                new Callback<TableColumn<Etablissement, String>, TableCell<Etablissement, String>>() {
+            @Override
+            public TableCell call(final TableColumn<Etablissement, String> param) {
+                final TableCell<Etablissement, String> cell = new TableCell<Etablissement, String>() {
+
+                    final Button btn = new Button("modifier");
+
+                    @Override
+                    public void updateItem(String item, boolean empty) {
+                        super.updateItem(item, empty);
+                        if (empty) {
+                            setGraphic(null);
+                            setText(null);
+                        } else {
+                            btn.setOnAction(event -> {
+                                Etablissement etab = getTableView().getItems().get(getIndex());
+                                MyDialogModifEtab mdme = new MyDialogModifEtab(m, etab);
+                                mdme.showAndWait();
+                            });
+                            setGraphic(btn);
+                            setText(null);
+                        }
+                    }
+                };
+                return cell;
+            }
+        };
+        
+        tablecolumnModif.setCellFactory(btnModifier);
+        tablecolumnSupp.setCellFactory(btnSupp);
+    }      
+    
+    @FXML
+    private void clicAddEtab(MouseEvent event) throws IOException, ParseException {
+       MyDialogAddEtablissement mdae = new MyDialogAddEtablissement(m);
+       mdae.showAndWait(); 
+       listeEtabli.clear();
+       m.allEtabs();
+       listeEtabli= m.getToutLesEtabs();
+       
+    }
+
 }

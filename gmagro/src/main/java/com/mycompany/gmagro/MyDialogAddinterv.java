@@ -25,7 +25,7 @@ import javafx.scene.layout.GridPane;
 class MyDialogAddinterv extends Dialog<Intervenant> {
 
     public MyDialogAddinterv(Model m) {
-        this.setTitle("Import");
+        this.setTitle("Ajouter");
         this.setHeaderText("This is a custom dialog. Enter info and \n"
                 + "press Okay (or click title bar 'X' for cancel).");
         this.setResizable(true);
@@ -127,11 +127,7 @@ class MyDialogAddinterv extends Dialog<Intervenant> {
                     System.out.println("ajouté pas reussi due au mdp");
                 }
 
-                a.setAlertType(Alert.AlertType.INFORMATION);
-                a.setHeaderText("Insertion reussi!");
-                a.setTitle("Etat d'insertion");
-                a.setContentText("vous avez reussi a inserer l'utilisateur " + prenom + " " + nom);
-                a.showAndWait();
+                
             }
 
             return null;

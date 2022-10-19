@@ -62,6 +62,35 @@ public class Etablissement {
     public String getLibelle() {
         return libelle;
     }
+
+    public void setCode(String code) {
+        this.code = code;
+    }
+
+    public void setLibelle(String libelle) {
+        this.libelle = libelle;
+    }
+
+    public void setAdr(String adr) {
+        this.adr = adr;
+    }
+
+    public void setCp(String cp) {
+        this.cp = cp;
+    }
+
+    public void setVille(String ville) {
+        this.ville = ville;
+    }
+
+    public void setP(PointGeo p) {
+        this.p = p;
+    }
+
+    public void setNbPers(int nbPers) {
+        this.nbPers = nbPers;
+    }
+    
     
     
     
