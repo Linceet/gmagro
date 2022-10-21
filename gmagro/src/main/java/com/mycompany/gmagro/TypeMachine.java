@@ -9,19 +9,19 @@ package com.mycompany.gmagro;
  * @author ageneste
  */
 public class TypeMachine {
-    private int code;
+    private String code;
     private String libelle;
     private String adr;
-    private int codeEtab;
+    private String codeEtab;
 
-    public TypeMachine(int code, String libelle, String adr, int codeEtab) {
+    public TypeMachine(String code, String libelle, String adr, String codeEtab) {
         this.code = code;
         this.libelle = libelle;
         this.adr = adr;
         this.codeEtab = codeEtab;
     }
 
-    public int getCode() {
+    public String getCode() {
         return code;
     }
 
@@ -33,7 +33,7 @@ public class TypeMachine {
         return adr;
     }
 
-    public int getCodeEtab() {
+    public String getCodeEtab() {
         return codeEtab;
     }
 

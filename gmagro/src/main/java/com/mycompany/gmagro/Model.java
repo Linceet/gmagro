@@ -31,6 +31,7 @@ public class Model {
     private ObservableList<Role> lesRoles = FXCollections.observableArrayList();
     private ObservableList<Intervenant> lesinters = FXCollections.observableArrayList();
     private ObservableList<Etablissement> toutLesEtabs = FXCollections.observableArrayList();
+    private ObservableList<TypeMachine> toutesLesMachine = FXCollections.observableArrayList();
 
     public Model() {
         if (ws == null) {
@@ -163,6 +164,23 @@ public class Model {
         ws.get("uc=addEtablissement&adr=" + adr + "&cp=" + cp + "&lib=" + lib + "&ville=" + ville + "&lng=" + lng + "&lat=" + lat);
     }
 
+    void allMachine() throws IOException, ParseException {
+        String rep = ws.get("uc=getAllMachine");
+        System.out.println("rep");
+        JSONArray ar = (JSONArray) parser.parse(rep);
+        for (int i = 0; i < ar.size(); i++) {
+            JSONObject jsono = (JSONObject) ar.get(i);
+            String codeM = jsono.get("codeType").toString();
+            String libelle = jsono.get("libelle").toString();
+            String cheminImg = jsono.get("cheminPhoto") == null ? null : jsono.get("cheminPhoto").toString();
+            String codeE = jsono.get("codeEtab") == null ? null : jsono.get("codeEtab").toString();
+            TypeMachine TM = new TypeMachine(codeM, libelle, cheminImg, codeE);
+            toutesLesMachine.add(TM);
+
+        }
+
+    }
+
     public void changer(String cont) throws IOException {
         switch (cont) {
             case "appli":
@@ -197,5 +215,17 @@ public class Model {
     public ObservableList<Etablissement> getToutLesEtabs() {
         return toutLesEtabs;
     }
+
+    public ObservableList<TypeMachine> getToutesLesMachine() {
+        return toutesLesMachine;
+    }
+
+    void suppMachineById(String id) throws IOException {
+        ws.get("uc=suppMachineById&id=" + id);
+    }
+
+    void adopterMachineById(String id) throws IOException {
+        ws.get("uc=adopterMachine&id="+id);
+   }
 
 }

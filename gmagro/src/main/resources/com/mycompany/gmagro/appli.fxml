@@ -24,7 +24,7 @@
                         <HBox prefHeight="379.0" prefWidth="600.0">
                            <children>
                               <PieChart fx:id="pc_Pers" prefHeight="375.0" prefWidth="431.0" />
-                              <MapView fx:id="mapView" prefHeight="451.0" prefWidth="425.0" />
+                              <MapView fx:id="mapViewMenu" prefHeight="451.0" prefWidth="425.0" />
                            </children>
                         </HBox>
                      </children>
@@ -98,7 +98,29 @@
           </TitledPane>
             <TitledPane animated="false" prefHeight="835.0" prefWidth="627.0" text="Type Machines">
                <content>
-                  <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+                  <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <VBox layoutX="-2.0" prefHeight="683.0" prefWidth="801.0">
+                           <children>
+                              <HBox prefHeight="332.0" prefWidth="801.0">
+                                 <children>
+                                    <ListView fx:id="lvEtabMachine" prefHeight="332.0" prefWidth="545.0" />
+                                    <MapView fx:id="mvEtabMachine" prefHeight="332.0" prefWidth="601.0" />
+                                 </children>
+                              </HBox>
+                              <TableView fx:id="tvMachine" prefHeight="320.0" prefWidth="801.0">
+                                <columns>
+                                  <TableColumn fx:id="TableColumnImage" prefWidth="240.0" text="Image" />
+                                  <TableColumn fx:id="tableColumnLib" minWidth="0.0" prefWidth="177.0" text="Machine" />
+                                    <TableColumn fx:id="tableColumnAdopter" minWidth="0.0" prefWidth="125.0" text="Adopter" />
+                                    <TableColumn fx:id="tableColumnModifierTM" minWidth="0.0" prefWidth="117.0" text="Modifier" />
+                                    <TableColumn fx:id="tableColumnSupprimerTM" minWidth="0.0" prefWidth="139.0" text="Supprimer" />
+                                </columns>
+                              </TableView>
+                              <Button fx:id="AddMachine" mnemonicParsing="false" onMouseClicked="#ClicAddMachine" text="Ajouter une machine" />
+                           </children>
+                        </VBox>
+                     </children></AnchorPane>
                </content>
             </TitledPane>
         </panes>

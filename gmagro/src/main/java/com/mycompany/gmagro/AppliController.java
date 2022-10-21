@@ -45,13 +45,14 @@ public class AppliController implements Initializable {
 
     private Model m = new Model();
     private final HashMap<Etablissement, Marker> hMapEtabPourMenu = new HashMap<>();
-    private final HashMap<Etablissement, Marker> hMapEtabPourIntervenant = new HashMap<>();
+    private final HashMap<Etablissement, Marker> hMapEtab = new HashMap<>();
     private final ObservableList<Etablissement> listeEt = m.getLesEtabs();
     private ObservableList<Intervenant> listeIntervenant = m.getLesinters();
     private ObservableList<Etablissement> listeEtabli = FXCollections.observableArrayList();
+    private ObservableList<TypeMachine> listeMachines = FXCollections.observableArrayList();
 
     @FXML
-    private MapView mapView;
+    private MapView mapViewMenu;
     @FXML
     private Accordion accordion;
     @FXML
@@ -94,26 +95,40 @@ public class AppliController implements Initializable {
     private Button btnAjouEtab;
     @FXML
     private TableView<Etablissement> tableViewEtablissement;
+    @FXML
+    private ListView<Etablissement> lvEtabMachine;
+    @FXML
+    private MapView mvEtabMachine;
+    @FXML
+    private TableView<TypeMachine> tvMachine;
+    @FXML
+    private TableColumn<TypeMachine, String> TableColumnImage;
+    @FXML
+    private TableColumn<TypeMachine, String> tableColumnLib;
+    @FXML
+    private TableColumn<TypeMachine, String> tableColumnAdopter;
+    @FXML
+    private TableColumn<TypeMachine, String> tableColumnModifierTM;
+    @FXML
+    private TableColumn<TypeMachine, String> tableColumnSupprimerTM;
+    @FXML
+    private Button AddMachine;
 
     /**
      * Initializes the controller class.
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        initialiseTvEtablissement();
-        initialiseTvIntervenant();
-        prepareButtonEtablissement();
-        prepareButtonsIntervenant();
         initialiseEtablissement();
         initialiseMenu();
-        initMapEtablissement();
-        initialiseMapIntervenant();
+        initialiseMachine();
+        initialiseIntervenant();
         initialiseRole();
 
     }
 
     //**************************************remplissage des liste********************************************
-    private void initialiseEtablissement() {
+    private void initialiseListeEtablissement() {
         try {
             m.getEtab();
             accordion.setExpandedPane(tpHome);
@@ -122,16 +137,32 @@ public class AppliController implements Initializable {
         }
     }
 
+    private void initialiseListeMachine() {
+        try {
+            m.allMachine();
+        } catch (IOException ex) {
+            Logger.getLogger(AppliController.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (ParseException ex) {
+            Logger.getLogger(AppliController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        listeMachines = m.getToutesLesMachine();
+    }
+
     private void initialiseTvIntervenant() {
-        tableColumnNom.setCellValueFactory(new PropertyValueFactory<>("nom"));
+        tableColumnLib.setCellValueFactory(new PropertyValueFactory<>("libelle"));
         tableViewIntervenant.setItems(listeIntervenant);
 
+    }
+
+    private void initTvMachine() {
+        tableColumnLib.setCellValueFactory(new PropertyValueFactory<>("libelle"));
+        tvMachine.setItems(listeMachines);
     }
 
     private void initialiseTvEtablissement() {
         try {
             m.allEtabs();
-            listeEtabli=m.getToutLesEtabs();
+            listeEtabli = m.getToutLesEtabs();
         } catch (IOException | ParseException ex) {
             Logger.getLogger(AppliController.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -158,19 +189,36 @@ public class AppliController implements Initializable {
         loadPiechart();
     }
 
-    private void initialiseMapIntervenant() {
+    private void initialiseIntervenant() {
         initMapIntervenant();
         loadLvEtab();
+        prepareButtonsIntervenant();
+        initialiseTvIntervenant();
+    }
+
+    private void initialiseEtablissement() {
+        initMapEtablissement();
+        initialiseTvEtablissement();
+        prepareButtonEtablissement();
+        initialiseListeEtablissement();
+    }
+
+    private void initialiseMachine() {
+        initMapMachine();
+        loadLvEtabMachine();
+        initialiseListeMachine();
+        initTvMachine();
+        prepareButtonsMachine();
     }
 
     //***************************fonctions *********************************************************************
     private void initMapMenu() {
-        mapView.initializedProperty().addListener((observable, oldValue, newValue) -> {
+        mapViewMenu.initializedProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue) {
                 afterMapMenuIsInitialized();
             }
         });
-        mapView.initialize();
+        mapViewMenu.initialize();
 
         for (Etablissement e : listeEt) {
             Marker mar = Marker.createProvided(Marker.Provided.RED).setVisible(true);
@@ -184,13 +232,13 @@ public class AppliController implements Initializable {
     }
 
     private void afterMapMenuIsInitialized() {
-        mapView.setZoom(5);
+        mapViewMenu.setZoom(5);
         for (Marker m : hMapEtabPourMenu.values()) {
-            mapView.addMarker(m);
+            mapViewMenu.addMarker(m);
         }
         Coordinate position;
         position = new Coordinate(45.46d, 02.57d);
-        mapView.setCenter(position);
+        mapViewMenu.setCenter(position);
     }
 
     private void initMapIntervenant() {
@@ -207,13 +255,13 @@ public class AppliController implements Initializable {
             marInter.setPosition(position);
             MapLabel mapLabel = new MapLabel(e.toString());
             marInter.attachLabel(mapLabel);
-            hMapEtabPourIntervenant.put(e, marInter);
+            hMapEtab.put(e, marInter);
         }
     }
 
     private void afterMapIntervenantIsInitialized() {
         mapViewInter.setZoom(5);
-        for (Marker marInter : hMapEtabPourIntervenant.values()) {
+        for (Marker marInter : hMapEtab.values()) {
             mapViewInter.addMarker(marInter);
         }
         Coordinate position;
@@ -235,18 +283,46 @@ public class AppliController implements Initializable {
             marInter.setPosition(position);
             MapLabel mapLabel = new MapLabel(e.toString());
             marInter.attachLabel(mapLabel);
-            hMapEtabPourIntervenant.put(e, marInter);
+            hMapEtab.put(e, marInter);
         }
     }
 
     private void afterMapEtablissementIsInitialized() {
         mvEtab.setZoom(5);
-        for (Marker marInter : hMapEtabPourIntervenant.values()) {
+        for (Marker marInter : hMapEtab.values()) {
             mvEtab.addMarker(marInter);
         }
         Coordinate position;
         position = new Coordinate(45.46d, 02.57d);
         mvEtab.setCenter(position);
+    }
+
+    private void initMapMachine() {
+        mvEtabMachine.initializedProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue) {
+                afterMapMachineIsInitialized();
+            }
+        });
+        mvEtabMachine.initialize();
+
+        for (Etablissement e : listeEt) {
+            Marker marInter = Marker.createProvided(Marker.Provided.RED).setVisible(true);
+            Coordinate position = new Coordinate(e.getP().getLat(), e.getP().getLng());
+            marInter.setPosition(position);
+            MapLabel mapLabel = new MapLabel(e.toString());
+            marInter.attachLabel(mapLabel);
+            hMapEtab.put(e, marInter);
+        }
+    }
+
+    private void afterMapMachineIsInitialized() {
+        mvEtabMachine.setZoom(5);
+        for (Marker marInter : hMapEtab.values()) {
+            mvEtabMachine.addMarker(marInter);
+        }
+        Coordinate position;
+        position = new Coordinate(45.46d, 02.57d);
+        mvEtabMachine.setCenter(position);
     }
 
     private void loadPiechart() {
@@ -260,6 +336,10 @@ public class AppliController implements Initializable {
 
     private void loadLvEtab() {
         lv_etab.setItems(listeEt);
+    }
+
+    private void loadLvEtabMachine() {
+        lvEtabMachine.setItems(listeEt);
     }
 
     @FXML
@@ -407,9 +487,8 @@ public class AppliController implements Initializable {
     }
 
     //*****************************************************ETABLISSEMENT*************************************
-    
-    private void prepareButtonEtablissement(){
-        
+    private void prepareButtonEtablissement() {
+
         Callback<TableColumn<Etablissement, String>, TableCell<Etablissement, String>> btnSupp
                 = //
                 new Callback<TableColumn<Etablissement, String>, TableCell<Etablissement, String>>() {
@@ -472,19 +551,142 @@ public class AppliController implements Initializable {
                 return cell;
             }
         };
-        
+
         tablecolumnModif.setCellFactory(btnModifier);
         tablecolumnSupp.setCellFactory(btnSupp);
-    }      
-    
-    @FXML
-    private void clicAddEtab(MouseEvent event) throws IOException, ParseException {
-       MyDialogAddEtablissement mdae = new MyDialogAddEtablissement(m);
-       mdae.showAndWait(); 
-       listeEtabli.clear();
-       m.allEtabs();
-       listeEtabli= m.getToutLesEtabs();
-       
     }
 
+    @FXML
+    private void clicAddEtab(MouseEvent event) throws IOException, ParseException {
+        MyDialogAddEtablissement mdae = new MyDialogAddEtablissement(m);
+        mdae.showAndWait();
+        listeEtabli.clear();
+        m.allEtabs();
+        listeEtabli = m.getToutLesEtabs();
+
+    }
+
+    @FXML
+    private void ClicAddMachine(MouseEvent event) {
+    }
+
+    private void prepareButtonsMachine() {
+        //********************************************tableColumnSupp button de Suppression*********************************************
+        Callback<TableColumn<TypeMachine, String>, TableCell<TypeMachine, String>> btnSupprimer
+                = //
+                new Callback<TableColumn<TypeMachine, String>, TableCell<TypeMachine, String>>() {
+            @Override
+            public TableCell call(final TableColumn<TypeMachine, String> param) {
+                final TableCell<TypeMachine, String> cell = new TableCell<TypeMachine, String>() {
+
+                    final Button btn = new Button("Supprimer");
+
+                    @Override
+                    public void updateItem(String item, boolean empty) {
+                        super.updateItem(item, empty);
+                        if (empty) {
+                            setGraphic(null);
+                            setText(null);
+                        } else {
+                            btn.setOnAction(event -> {
+                                TypeMachine machine = getTableView().getItems().get(getIndex());
+                                String id = machine.getCode();
+                                try {
+                                    m.suppMachineById(id);
+                                } catch (IOException ex) {
+                                    System.out.println("suppression Machine: ERROR");
+                                }
+                            });
+                            setGraphic(btn);
+                            setText(null);
+                        }
+                    }
+                };
+                return cell;
+            }
+        };
+
+        loadBtnAdopter();
+
+        //********************************************tableColumnModifier button de modification*********************************************
+        Callback<TableColumn<TypeMachine, String>, TableCell<TypeMachine, String>> btnModifier
+                = //
+                new Callback<TableColumn<TypeMachine, String>, TableCell<TypeMachine, String>>() {
+            @Override
+            public TableCell call(final TableColumn<TypeMachine, String> param) {
+                final TableCell<TypeMachine, String> cell = new TableCell<TypeMachine, String>() {
+
+                    final Button btn = new Button("modifier");
+
+                    @Override
+                    public void updateItem(String item, boolean empty) {
+                        super.updateItem(item, empty);
+                        if (empty) {
+                            setGraphic(null);
+                            setText(null);
+                        } else {
+                            btn.setOnAction(event -> {
+                                TypeMachine machine = getTableView().getItems().get(getIndex());
+                                MyDialogModifTM mdmtm = new MyDialogModifTM(m, machine);
+                                mdmtm.showAndWait();
+                            });
+                            setGraphic(btn);
+                            setText(null);
+                        }
+                    }
+                };
+                return cell;
+            }
+        };
+
+        tableColumnSupprimerTM.setCellFactory(btnSupprimer);
+        tableColumnModifierTM.setCellFactory(btnModifier);
+    }
+
+    public void loadBtnAdopter() {
+        Callback<TableColumn<TypeMachine, String>, TableCell<TypeMachine, String>> btnAdopt
+                = //
+                new Callback<TableColumn<TypeMachine, String>, TableCell<TypeMachine, String>>() {
+            @Override
+            public TableCell call(final TableColumn<TypeMachine, String> param) {
+                final TableCell<TypeMachine, String> cell = new TableCell<TypeMachine, String>() {
+
+                    final Button btn = new Button("adopter la machine");
+
+                    @Override
+                    public void updateItem(String item, boolean empty) {
+                        super.updateItem(item, empty);
+                        if (empty) {
+                            setGraphic(null);
+                            setText(null);
+                        } else {
+                            TypeMachine machine = getTableView().getItems().get(getIndex());
+                            btn.setOnAction(event -> {
+
+                                String id = machine.getCode();
+                                try {
+                                    m.adopterMachineById(id);
+                                } catch (IOException ex) {
+                                    Logger.getLogger(AppliController.class.getName()).log(Level.SEVERE, null, ex);
+                                }
+                                System.out.println("Error adoption");
+
+                            });
+                            setGraphic(btn);
+                            setText(null);
+                            if (machine.getCodeEtab() == null) {
+                                btn.setDisable(true);
+                            } else {
+                                btn.setDisable(false);
+                            }
+                        }
+
+                    }
+
+                };
+                return cell;
+            }
+        };
+        tableColumnAdopter.setCellFactory(btnAdopt);
+    }
 }
