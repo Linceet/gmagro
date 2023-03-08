@@ -149,7 +149,7 @@ public class AppliController implements Initializable {
     }
 
     private void initialiseTvIntervenant() {
-        tableColumnLib.setCellValueFactory(new PropertyValueFactory<>("libelle"));
+        tableColumnNom.setCellValueFactory(new PropertyValueFactory<>("nom"));
         tableViewIntervenant.setItems(listeIntervenant);
 
     }
@@ -349,8 +349,8 @@ public class AppliController implements Initializable {
         System.out.println("on passe : " + e.getLibelle());
         m.getIntervenantFromAEtablissement(String.valueOf(e.getCode()));
         listeIntervenant = m.getLesIntervenantParEtab();
-
         tableViewIntervenant.setItems(listeIntervenant);
+        
 
     }
 
@@ -377,6 +377,13 @@ public class AppliController implements Initializable {
                                 String id = person.getMail();
                                 try {
                                     m.suppIntervenantById(id);
+                                    listeIntervenant.clear();
+                                    try {
+                                        m.getAllIntervenant();
+                                    } catch (ParseException ex) {
+                                        Logger.getLogger(AppliController.class.getName()).log(Level.SEVERE, null, ex);
+                                    }
+                                    listeIntervenant = m.getLesinters();
                                 } catch (IOException ex) {
                                     System.out.println("suppression Intervenant: ERROR");
                                 }
@@ -415,6 +422,13 @@ public class AppliController implements Initializable {
                                 if (showAndWait.isPresent()) {
                                     try {
                                         m.updateRoleInIntervenant(mail, String.valueOf(showAndWait.get().getCode()));
+                                        listeIntervenant.clear();
+                                        try {
+                                            m.getAllIntervenant();
+                                        } catch (ParseException ex) {
+                                            Logger.getLogger(AppliController.class.getName()).log(Level.SEVERE, null, ex);
+                                        }
+                                        listeIntervenant = m.getLesinters();
                                     } catch (IOException ex) {
                                         System.out.println("Error modif de role d'un Intervenant");
                                     }
@@ -445,6 +459,13 @@ public class AppliController implements Initializable {
                         if (empty) {
                             setGraphic(null);
                             setText(null);
+                            listeIntervenant.clear();
+                            try {
+                                m.getAllIntervenant();
+                            } catch (IOException | ParseException ex) {
+                                Logger.getLogger(AppliController.class.getName()).log(Level.SEVERE, null, ex);
+                            }
+                            listeIntervenant = m.getLesinters();
                         } else {
                             btn.setOnAction(event -> {
                                 Intervenant person = getTableView().getItems().get(getIndex());
@@ -476,14 +497,28 @@ public class AppliController implements Initializable {
 
     @FXML
     private void clicAddInterv(MouseEvent event) {
-        MyDialogAddinterv mdai = new MyDialogAddinterv(m);
-        mdai.showAndWait();
+        try {
+            MyDialogAddinterv mdai = new MyDialogAddinterv(m);
+            mdai.showAndWait();
+            listeIntervenant.clear();
+            m.getAllIntervenant();
+            listeIntervenant = m.getLesinters();
+        } catch (IOException | ParseException ex) {
+            Logger.getLogger(AppliController.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     @FXML
     private void clicImport(MouseEvent event) {
         MyDialogImport mdi = new MyDialogImport(m);
         mdi.showAndWait();
+        listeIntervenant.clear();
+        try {
+            m.getAllIntervenant();
+        } catch (IOException | ParseException ex) {
+            Logger.getLogger(AppliController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        listeIntervenant = m.getLesinters();
     }
 
     //*****************************************************ETABLISSEMENT*************************************
@@ -510,7 +545,10 @@ public class AppliController implements Initializable {
                                 String id = etablissement.getCode();
                                 try {
                                     m.suppEtabissementById(id);
-                                } catch (IOException ex) {
+                                    listeEtabli.clear();
+                                    m.allEtabs();
+                                    listeEtabli = m.getToutLesEtabs();
+                                } catch (IOException | ParseException ex) {
                                     Logger.getLogger(AppliController.class.getName()).log(Level.SEVERE, null, ex);
                                 }
                             });
@@ -539,9 +577,16 @@ public class AppliController implements Initializable {
                             setText(null);
                         } else {
                             btn.setOnAction(event -> {
-                                Etablissement etab = getTableView().getItems().get(getIndex());
-                                MyDialogModifEtab mdme = new MyDialogModifEtab(m, etab);
-                                mdme.showAndWait();
+                                try {
+                                    Etablissement etab = getTableView().getItems().get(getIndex());
+                                    MyDialogModifEtab mdme = new MyDialogModifEtab(m, etab);
+                                    mdme.showAndWait();
+                                    listeEtabli.clear();
+                                    m.allEtabs();
+                                    listeEtabli = m.getToutLesEtabs();
+                                } catch (IOException | ParseException ex) {
+                                    Logger.getLogger(AppliController.class.getName()).log(Level.SEVERE, null, ex);
+                                }
                             });
                             setGraphic(btn);
                             setText(null);
@@ -593,6 +638,13 @@ public class AppliController implements Initializable {
                                 String id = machine.getCode();
                                 try {
                                     m.suppMachineById(id);
+                                    listeMachines.clear();
+                                    try {
+                                        m.allMachine();
+                                    } catch (ParseException ex) {
+                                        Logger.getLogger(AppliController.class.getName()).log(Level.SEVERE, null, ex);
+                                    }
+                                    listeMachines = m.getToutesLesMachine();
                                 } catch (IOException ex) {
                                     System.out.println("suppression Machine: ERROR");
                                 }
@@ -629,6 +681,14 @@ public class AppliController implements Initializable {
                                 TypeMachine machine = getTableView().getItems().get(getIndex());
                                 MyDialogModifTM mdmtm = new MyDialogModifTM(m, machine);
                                 mdmtm.showAndWait();
+                                m.modifierLibMachine(machine.getLibelle(),machine.getCode());
+                                listeMachines.clear(); 
+                                try {
+                                    m.allMachine();
+                                } catch (IOException | ParseException ex) {
+                                    Logger.getLogger(AppliController.class.getName()).log(Level.SEVERE, null, ex);
+                                }
+                                listeMachines = m.getToutesLesMachine();
                             });
                             setGraphic(btn);
                             setText(null);

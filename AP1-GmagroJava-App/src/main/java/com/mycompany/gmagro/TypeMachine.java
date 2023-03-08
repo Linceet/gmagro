@@ -13,6 +13,7 @@ public class TypeMachine {
     private String libelle;
     private String adr;
     private String codeEtab;
+    private String img;
 
     public TypeMachine(String code, String libelle, String adr, String codeEtab) {
         this.code = code;
@@ -40,6 +41,10 @@ public class TypeMachine {
     @Override
     public String toString() {
         return code + libelle;
+    }
+
+    public void setLibelle(String libelle) {
+        this.libelle = libelle;
     }
     
     

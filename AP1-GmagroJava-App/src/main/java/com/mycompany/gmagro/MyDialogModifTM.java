@@ -21,30 +21,38 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
 import javafx.stage.FileChooser;
 
-
 /**
  *
  * @author ageneste
  */
 class MyDialogModifTM extends Dialog<TypeMachine> {
 
-    MyDialogModifTM(Model m, TypeMachine machine) {
+    public MyDialogModifTM(Model m, TypeMachine machine) {
         this.setTitle("Modifier");
-        this.setHeaderText("This is a custom dialog. Enter info and \n"
-                + "press Okay (or click title bar 'X' for cancel). \n"
-                + "please fill EVERYTHING!");
+        this.setHeaderText("Modification des types machines");
         this.setResizable(true);
-        
+
         ImageView iv = new ImageView();
         Label labelLib = new Label("Nouveau nom de la machine:  ");
         TextField textLib = new TextField(machine.getLibelle());
         ButtonType btnFileImage = new ButtonType("selectionner une image");
         this.getDialogPane().getButtonTypes().add(btnFileImage);
-        this.setResultConverter((ButtonType f) -> {
-            if (f == btnFileImage) {
+        GridPane grid = new GridPane();
+        grid.add(labelLib, 1, 1);
+        grid.add(textLib, 2, 1);
+        grid.add(iv, 1, 2);
+
+        this.getDialogPane().setContent(grid);
+        ButtonType buttonTypeOk = new ButtonType("Okay", ButtonBar.ButtonData.OK_DONE);
+        this.getDialogPane().getButtonTypes().add(buttonTypeOk);
+        System.err.println("On affecte resultconverter");
+        this.setResultConverter((buttonClique) -> {
+            System.err.println("On clique un button");
+            if (buttonClique == btnFileImage) {
+                System.err.println("On clique le bouton imagefile");
                 FileChooser fc = new FileChooser();
                 File fi = fc.showOpenDialog(this.getDialogPane().getScene().getWindow());
-                fc.getExtensionFilters().add(new FileChooser.ExtensionFilter("Photos de machines", "*.jpg" )) ;
+                fc.getExtensionFilters().add(new FileChooser.ExtensionFilter("Photos de machines", "*.jpg"));
                 if (fi != null) {
                     try {
                         iv.setImage(new Image(new FileInputStream(fi)));
@@ -52,50 +60,23 @@ class MyDialogModifTM extends Dialog<TypeMachine> {
                         Logger.getLogger(MyDialogModifTM.class.getName()).log(Level.SEVERE, null, ex);
                     }
                 }
-            }
-            return null;
-        });
-
-        GridPane grid = new GridPane();
-        grid.add(labelLib, 1, 1);
-        grid.add(textLib, 2, 1);
-        
-        this.getDialogPane().setContent(grid);
-
-        ButtonType buttonTypeOk = new ButtonType("Okay", ButtonBar.ButtonData.OK_DONE);
-        this.getDialogPane().getButtonTypes().add(buttonTypeOk);
-
-        this.setResultConverter((ButtonType b) -> {
-            String adr;
-            String cp;
-            String lib;
-            String ville;
-            if (b == buttonTypeOk) {
-
-               /* adr = textAdr.getText();
-                etab.setAdr(adr);
-
-                cp = textCp.getText();
-                etab.setCp(cp);
-
-                lib = textLib.getText();
-                etab.setLibelle(lib);
-
-                ville = textVille.getText();
-                etab.setVille(ville);
-
+            } else if (buttonClique == buttonTypeOk) {
+                String lib = textLib.getText();
+                machine.setLibelle(lib);
+                /*
                 try {
                     m.updateEtablissement(etab.getCode(), adr, cp, lib, ville);
                 } catch (IOException ex) {
                     Logger.getLogger(MyDialogModifEtab.class.getName()).log(Level.SEVERE, null, ex);
                 }
-*/
+                 */
                 Alert a = new Alert(Alert.AlertType.INFORMATION);
                 a.setHeaderText("Modif reussi!");
                 a.setTitle("Etat Modification");
-                a.setContentText("vous avez reussi a Modifier l'Etablissement " );
+                a.setContentText("vous avez reussi a Modifier l'Etablissement ");
+                a.showAndWait() ;
+                return machine ;
             }
-
             return null;
         });
     }

@@ -227,5 +227,13 @@ public class Model {
     void adopterMachineById(String id) throws IOException {
         ws.get("uc=adopterMachine&id="+id);
    }
+   
+   void modifierLibMachine(String lib, String code){
+        try {
+            ws.get("uc=modLibMach&lib="+lib+"&id="+code);
+        } catch (IOException ex) {
+            Logger.getLogger(Model.class.getName()).log(Level.SEVERE, null, ex);
+        }
+   }
 
 }
