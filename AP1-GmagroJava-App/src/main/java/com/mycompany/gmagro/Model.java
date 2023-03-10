@@ -180,6 +180,10 @@ public class Model {
         }
 
     }
+    
+    void addTypeMachine(String code, String libelle, String img) throws IOException {
+        ws.post("uc=addTypeMachine&code=" + code + "&lib=" + libelle , img);
+    }
 
     public void changer(String cont) throws IOException {
         switch (cont) {
@@ -228,7 +232,7 @@ public class Model {
         ws.get("uc=adopterMachine&id="+id);
    }
    
-   void modifierLibMachine(String lib, String code){
+   void modifierTypeMachine(String lib, String code,String img){
         try {
             ws.get("uc=modLibMach&lib="+lib+"&id="+code);
         } catch (IOException ex) {

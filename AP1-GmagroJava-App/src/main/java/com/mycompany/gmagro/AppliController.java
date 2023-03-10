@@ -613,6 +613,15 @@ public class AppliController implements Initializable {
 
     @FXML
     private void ClicAddMachine(MouseEvent event) {
+         MyDialogAddTM mdam = new MyDialogAddTM(m);
+         mdam.showAndWait();
+         listeMachines.clear();
+        try {
+            m.allMachine();
+        } catch (IOException | ParseException ex) {
+            Logger.getLogger(AppliController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+         listeMachines = m.getToutesLesMachine();
     }
 
     private void prepareButtonsMachine() {
@@ -681,7 +690,8 @@ public class AppliController implements Initializable {
                                 TypeMachine machine = getTableView().getItems().get(getIndex());
                                 MyDialogModifTM mdmtm = new MyDialogModifTM(m, machine);
                                 mdmtm.showAndWait();
-                                m.modifierLibMachine(machine.getLibelle(),machine.getCode());
+                                machine.getImg(); 
+                                m.modifierTypeMachine(machine.getLibelle(),machine.getCode(),machine.getImg());
                                 listeMachines.clear(); 
                                 try {
                                     m.allMachine();

@@ -21,6 +21,14 @@ public class TypeMachine {
         this.adr = adr;
         this.codeEtab = codeEtab;
     }
+    
+    public TypeMachine(String code, String libelle, String adr, String codeEtab,String img) {
+        this.code = code;
+        this.libelle = libelle;
+        this.adr = adr;
+        this.codeEtab = codeEtab;
+        this.img = img;
+    }
 
     public String getCode() {
         return code;
@@ -46,6 +54,15 @@ public class TypeMachine {
     public void setLibelle(String libelle) {
         this.libelle = libelle;
     }
+
+    public String getImg() {
+        return img;
+    }
+
+    public void setImg(String img) {
+        this.img = img;
+    }
+    
     
     
     

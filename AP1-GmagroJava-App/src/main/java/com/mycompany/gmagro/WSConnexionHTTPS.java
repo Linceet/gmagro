@@ -102,11 +102,11 @@ public class WSConnexionHTTPS {
         }
     }
 
-    public String post(String url, String json) throws IOException {
-        RequestBody body = RequestBody.create(JSON, json);
+    public String post(String url, String body) throws IOException {
+        RequestBody rBody = RequestBody.create(JSON, body);
         Request request = new Request.Builder()
                 .url(base_url + url)
-                .post(body)
+                .post(rBody)
                 .build();
         try ( Response response = client.newCall(request).execute()) {
             return response.body().string();
