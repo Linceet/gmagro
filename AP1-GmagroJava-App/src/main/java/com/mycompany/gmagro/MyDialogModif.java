@@ -23,7 +23,7 @@ import javafx.scene.layout.GridPane;
  *
  * @author ageneste
  */
-class MyDialogModif extends Dialog<Intervenant> {
+public class MyDialogModif extends Dialog<Intervenant> {
 
     public MyDialogModif(Model m, Intervenant inter) {
         this.setTitle("Modifier");

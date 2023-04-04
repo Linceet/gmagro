@@ -89,17 +89,21 @@ public class WSConnexionHTTPS {
         return instance;
     }
 
-    public String get(String url) throws IOException {
-        System.out.println("WSGET: "+base_url+url);
+    public String get(String url) {
+        System.out.println("WSGET: " + base_url + url);
         Request request = new Request.Builder()
                 .url(base_url + url)
                 .build();
 
-        try ( Response response = client.newCall(request).execute()) {
-            String ret = response.body().string() ;
-            System.out.println("WGRESPONSE: "+ret);
+        try (
+                 Response response = client.newCall(request).execute()) {
+            String ret = response.body().string();
+            System.out.println("WGRESPONSE: " + ret);
             return ret;
+        } catch (IOException ex) {
+            Logger.getLogger(WSConnexionHTTPS.class.getName()).log(Level.SEVERE, null, ex);
         }
+        return null;
     }
 
     public String post(String url, String body) throws IOException {

@@ -92,29 +92,35 @@ class MyDialogAddinterv extends Dialog<Intervenant> {
                 mdpC = pfMdpConf.getText();
                 prenom = textPrenom.getText();
                 nom = textNom.getText();
-                ac = cbActif.isSelected()?1:0;
+                ac = cbActif.isSelected() ? 1 : 0;
                 System.out.println(ac);
-                cRole = String.valueOf(cbEtab.getSelectionModel().getSelectedItem().getCode());
+                cRole = String.valueOf(cbRole.getSelectionModel().getSelectedItem().getCode());
                 cEtab = String.valueOf(cbEtab.getSelectionModel().getSelectedItem().getCode());
 
                 if (mdp.equals(mdpC)) {
                     if (!mail.isEmpty() && !prenom.isEmpty() && !mdp.isEmpty() && !nom.isEmpty() && !cRole.isEmpty() && !cRole.isEmpty()) {
-                        try {
-                            System.out.println("ajouté");
-                            m.addIntervenant(mail, mdp, prenom, nom, ac, cRole, cEtab);
+                        System.out.println("ajouté");
+                        int res = m.addIntervenant(mail, mdp, prenom, nom, ac, cRole, cEtab);
+                        if (res == 1) {
                             a.setAlertType(Alert.AlertType.INFORMATION);
                             a.setHeaderText("Insertion reussi!");
                             a.setTitle("Etat d'insertion");
                             a.setContentText("vous avez reussi a inserer l'utilisateur " + prenom + " " + nom);
                             a.showAndWait();
-                        } catch (IOException ex) {
-                            System.out.println("pb d'insertion dans la base de donné");
+                        } else {
+                            a.setAlertType(Alert.AlertType.ERROR);
+                            a.setHeaderText("Insertion Echec!");
+                            a.setTitle("Etat d'insertion");
+                            a.setContentText("la base de donné n'as pas pu inserer");
+                            a.showAndWait();
+                            System.out.println("ajouté pas reussi");
                         }
                     } else {
                         a.setAlertType(Alert.AlertType.ERROR);
                         a.setHeaderText("Insertion Echec!");
                         a.setTitle("Etat d'insertion;");
                         a.setContentText("Un champ est vide");
+                        a.showAndWait();
                         System.out.println("ajouté pas reussi");
                     }
 
@@ -127,7 +133,6 @@ class MyDialogAddinterv extends Dialog<Intervenant> {
                     System.out.println("ajouté pas reussi due au mdp");
                 }
 
-                
             }
 
             return null;

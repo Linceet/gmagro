@@ -34,7 +34,6 @@ class MyDialogImport extends Dialog<Intervenant> {
         Label labelEtablissment = new Label("Etablissement d'import :  ");
         ComboBox<Etablissement> cbEtablissement = new ComboBox<>(m.getLesEtabs());
         Button buttonFileChooser = new Button("selectionner un fichier csv");
-        
 
         this.setTitle("Import");
         this.setHeaderText("Import d'intervenant");
@@ -51,49 +50,43 @@ class MyDialogImport extends Dialog<Intervenant> {
         this.getDialogPane().getButtonTypes().add(new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE));
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         buttonFileChooser.setOnMouseClicked(mc -> {
-            try {
-                    FileChooser fc = new FileChooser();
-                    File f = fc.showOpenDialog(this.getDialogPane().getScene().getWindow());
-                    if (f != null) {
-                        Scanner sc = new Scanner(new FileInputStream(f));
-                        sc.nextLine();
-                        while (sc.hasNext()) {
-                            String ligne = sc.nextLine();
-                            String infoIntervenant[] = ligne.split(";");
-                            Etablissement e = cbEtablissement.getSelectionModel().getSelectedItem();
-                            String codeE = e.getCode();
-                            Intervenant i = new Intervenant(infoIntervenant[2], infoIntervenant[1], infoIntervenant[0], true, codeE, infoIntervenant[4]);
-                            dicoPwd.put(i, infoIntervenant[3]);
-                        }
+            FileChooser fc = new FileChooser();
+            File f = fc.showOpenDialog(this.getDialogPane().getScene().getWindow());
+            if (f != null) {
+                try {
+                    Scanner sc = new Scanner(new FileInputStream(f));
+                    sc.nextLine();
+                    while (sc.hasNext()) {
+                        String ligne = sc.nextLine();
+                        String infoIntervenant[] = ligne.split(";");
+                        Etablissement e = cbEtablissement.getSelectionModel().getSelectedItem();
+                        String codeE = e.getCode();
+                        Intervenant i = new Intervenant(infoIntervenant[2], infoIntervenant[1], infoIntervenant[0], true, codeE, infoIntervenant[4]);
+                        dicoPwd.put(i, infoIntervenant[3]);
                     }
-                } catch (IOException ex) {
-                    System.out.println("Site indisponible");
+                } catch (FileNotFoundException ex) {
+                    Logger.getLogger(MyDialogImport.class.getName()).log(Level.SEVERE, null, ex);
                 }
-        });
-        
-        this.setResultConverter((ButtonType b) -> {
-             if (b == buttonTypeOk) {
-
-                    for (Map.Entry<Intervenant, String> entry : dicoPwd.entrySet()) {
-                        Intervenant inter = entry.getKey();
-                        String mdp = entry.getValue();
-                        try {
-                             m.addIntervenant(inter.getMail(), mdp, inter.getPrenom(), inter.getNom(), inter.isActif()?1:0, inter.getCodeRole(), inter.getCodeEtab());
-                        } catch (IOException ex) {
-                            Logger.getLogger(MyDialogImport.class.getName()).log(Level.SEVERE, null, ex);
-                        }
-                    }
-                    alert.setHeaderText("Insertion reussi!");
-                    alert.setTitle("Etat d'insertion");
-                    alert.setContentText("vous avez reussi a inserer l'utilisateur ");
-                    alert.showAndWait();
-                    return null;
-                
             }
+        });
+
+        this.setResultConverter((ButtonType b) -> {
+            if (b == buttonTypeOk) {
+
+                for (Map.Entry<Intervenant, String> entry : dicoPwd.entrySet()) {
+                    Intervenant inter = entry.getKey();
+                    String mdp = entry.getValue();
+                    m.addIntervenant(inter.getMail(), mdp, inter.getPrenom(), inter.getNom(), inter.isActif() ? 1 : 0, inter.getCodeRole(), inter.getCodeEtab());
+                }
+                alert.setHeaderText("Insertion reussi!");
+                alert.setTitle("Etat d'insertion");
+                alert.setContentText("vous avez reussi a inserer l'utilisateur ");
+                alert.showAndWait();
                 return null;
+
+            }
+            return null;
         });
 
     }
 }
-
-

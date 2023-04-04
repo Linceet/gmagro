@@ -78,7 +78,7 @@
                               </TableView>
                               <HBox prefHeight="100.0" prefWidth="200.0">
                                  <children>
-                                    <Button fx:id="btnAddInterv" mnemonicParsing="false" onMouseClicked="#clicAddInterv" text="Add Intervenant">
+                                    <Button mnemonicParsing="false" onMouseClicked="#clicAddInterv" text="Add Intervenant">
                                        <HBox.margin>
                                           <Insets right="25.0" />
                                        </HBox.margin>

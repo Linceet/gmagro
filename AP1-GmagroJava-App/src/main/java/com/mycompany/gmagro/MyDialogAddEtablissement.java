@@ -82,17 +82,15 @@ class MyDialogAddEtablissement extends Dialog<Etablissement> {
                 lat = textLat.getText();
 
                 if (!cp.isEmpty() && !lng.isEmpty() && !ville.isEmpty() && !adr.isEmpty() && !lib.isEmpty()) {
-                    try {
-                        System.out.println("ajouté");
-                        m.addEtablissement(adr, cp, lib, ville, lng,  lat);
-                        a.setAlertType(Alert.AlertType.INFORMATION);
-                        a.setHeaderText("Insertion reussi!");
-                        a.setTitle("Etat d'insertion");
-                        a.setContentText("vous avez reussi a inserer l'Etablissement " + lib +" "+ ville);
-                        a.showAndWait();
-                    } catch (IOException ex) {
-                        System.out.println("pb d'insertion dans la base de donné");
-                    }
+
+                    System.out.println("ajouté");
+                    m.addEtablissement(adr, cp, lib, ville, lng, lat);
+                    a.setAlertType(Alert.AlertType.INFORMATION);
+                    a.setHeaderText("Insertion reussi!");
+                    a.setTitle("Etat d'insertion");
+                    a.setContentText("vous avez reussi a inserer l'Etablissement " + lib + " " + ville);
+                    a.showAndWait();
+
                 } else {
                     a.setAlertType(Alert.AlertType.ERROR);
                     a.setHeaderText("Insertion Echec!");
@@ -100,12 +98,7 @@ class MyDialogAddEtablissement extends Dialog<Etablissement> {
                     a.setContentText("Un champ est vide");
                     System.out.println("ajouté pas reussi");
                 }
-                try {
-                    m.allEtabs();
-                    
-                } catch (IOException | ParseException ex) {
-                    Logger.getLogger(MyDialogAddEtablissement.class.getName()).log(Level.SEVERE, null, ex);
-                }
+                m.allEtabs();
 
             }
 

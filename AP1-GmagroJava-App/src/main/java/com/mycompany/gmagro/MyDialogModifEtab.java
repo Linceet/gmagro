@@ -19,9 +19,9 @@ import javafx.scene.layout.GridPane;
  *
  * @author ageneste
  */
-class MyDialogModifEtab extends Dialog<Etablissement> {
+public class MyDialogModifEtab extends Dialog<Etablissement> {
 
-    MyDialogModifEtab(Model m, Etablissement etab) {
+    public MyDialogModifEtab(Model m, Etablissement etab) {
         this.setTitle("Modifier");
         this.setHeaderText("This is a custom dialog. Enter info and \n"
                 + "press Okay (or click title bar 'X' for cancel). \n"
@@ -72,13 +72,7 @@ class MyDialogModifEtab extends Dialog<Etablissement> {
 
                 ville = textVille.getText();
                 etab.setVille(ville);
-                
-                try {
-                    m.updateEtablissement(etab.getCode(), adr, cp, lib, ville);
-                } catch (IOException ex) {
-                    Logger.getLogger(MyDialogModifEtab.class.getName()).log(Level.SEVERE, null, ex);
-                }
-
+                m.updateEtablissement(etab.getCode(), adr, cp, lib, ville);
                 Alert a = new Alert(Alert.AlertType.INFORMATION);
                 a.setHeaderText("Modif reussi!");
                 a.setTitle("Etat Modification");

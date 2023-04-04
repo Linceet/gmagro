@@ -79,30 +79,34 @@ public class Model {
 
     }
 
-    public void getAllIntervenant() throws IOException, ParseException {
-        String rep = ws.get("uc=intervenant");
-        JSONArray ar = (JSONArray) parser.parse(rep);
-        for (int i = 0; i < ar.size(); i++) {
-            JSONObject jsono = (JSONObject) ar.get(i);
-            String mail = jsono.get("mail").toString();
-            String nom = jsono.get("nom").toString();
-            String prenom = jsono.get("prenom").toString();
-            String actif = jsono.get("actif").toString();
-            String codeR = jsono.get("codeRole").toString();
-            String codeE = jsono.get("codeEtab").toString();
-            Intervenant in = new Intervenant(mail, prenom, nom, Boolean.parseBoolean(actif), codeE, codeR);
-            lesinters.add(in);
+    public void getAllIntervenant(){
+        try {
+            String rep = ws.get("uc=intervenant");
+            JSONArray ar = (JSONArray) parser.parse(rep);
+            for (int i = 0; i < ar.size(); i++) {
+                JSONObject jsono = (JSONObject) ar.get(i);
+                String mail = jsono.get("mail").toString();
+                String nom = jsono.get("nom").toString();
+                String prenom = jsono.get("prenom").toString();
+                String actif = jsono.get("actif").toString();
+                String codeR = jsono.get("codeRole").toString();
+                String codeE = jsono.get("codeEtab").toString();
+                Intervenant in = new Intervenant(mail, prenom, nom, Boolean.parseBoolean(actif), codeE, codeR);
+                lesinters.add(in);
+            }
+        } catch (ParseException ex) {
+            Logger.getLogger(Model.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
-    public int addIntervenant(String mail, String mdp, String prenom, String nom, int actif, String codeRole, String codeEtab) throws IOException {
+    public int addIntervenant(String mail, String mdp, String prenom, String nom, int actif, String codeRole, String codeEtab){
         String rep = ws.get("uc=addInterv&mail=" + mail + "&mdp=" + mdp + "&prenom=" + prenom + "&nom=" + nom + "&actif=" + actif + "&codeR=" + codeRole + "&codeE=" + codeEtab);
         int r = Integer.parseInt(rep);
         System.out.println(r);
         return r;
     }
 
-    public void updateRoleInIntervenant(String mail, String codeRole) throws IOException {
+    public void updateRoleInIntervenant(String mail, String codeRole){
         ws.get("uc=modRoleIntoIntervenant&id=" + mail + "&codeR=" + codeRole);
     }
 
@@ -129,38 +133,43 @@ public class Model {
         }
     }
 
-    public void suppIntervenantById(String mail) throws IOException {
+    public void suppIntervenantById(String mail){
         ws.get("uc=suppIntervenant&mail=" + mail);
     }
 
-    public void allEtabs() throws IOException, ParseException {
+    public void allEtabs() {
         String rep = ws.get("uc=etablissement");
-        JSONArray ar = (JSONArray) parser.parse(rep);
-        for (int i = 0; i < ar.size(); i++) {
-            JSONObject jsono = (JSONObject) ar.get(i);
-            String code = jsono.get("codeEtab").toString();
-            String lib = jsono.get("libelle").toString();
-            String ad = jsono.get("adrs").toString();
-            String cp = jsono.get("cp").toString();
-            String ville = jsono.get("ville").toString();
-            String lon = jsono.get("lng").toString();
-            String lat = jsono.get("lat").toString();
-            PointGeo p = new PointGeo(Double.parseDouble(lat), Double.parseDouble(lon));
-            Etablissement e = new Etablissement(code, lib, ad, cp, ville, p, 0);
-            toutLesEtabs.add(e);
-
+        JSONArray ar;
+        try {
+            ar = (JSONArray) parser.parse(rep);
+            for (int i = 0; i < ar.size(); i++) {
+                JSONObject jsono = (JSONObject) ar.get(i);
+                String code = jsono.get("codeEtab").toString();
+                String lib = jsono.get("libelle").toString();
+                String ad = jsono.get("adrs").toString();
+                String cp = jsono.get("cp").toString();
+                String ville = jsono.get("ville").toString();
+                String lon = jsono.get("lng").toString();
+                String lat = jsono.get("lat").toString();
+                PointGeo p = new PointGeo(Double.parseDouble(lat), Double.parseDouble(lon));
+                Etablissement e = new Etablissement(code, lib, ad, cp, ville, p, 0);
+                toutLesEtabs.add(e);
+            }
+        } catch (ParseException ex) {
+            Logger.getLogger(Model.class.getName()).log(Level.SEVERE, null, ex);
         }
+
     }
 
-    void suppEtabissementById(String id) throws IOException {
+    public void suppEtablissementById(String id) {
         ws.get("uc=suppEtablissement&id=" + id);
     }
 
-    public void updateEtablissement(String code, String adr, String cp, String lib, String ville) throws IOException {
+    public void updateEtablissement(String code, String adr, String cp, String lib, String ville) {
         ws.get("uc=modifEtablissement&code=" + code + "&adr=" + adr + "&cp=" + cp + "&lib=" + lib + "&ville=" + ville);
     }
 
-    void addEtablissement(String adr, String cp, String lib, String ville, String lng, String lat) throws IOException {
+    public void addEtablissement(String adr, String cp, String lib, String ville, String lng, String lat) {
         ws.get("uc=addEtablissement&adr=" + adr + "&cp=" + cp + "&lib=" + lib + "&ville=" + ville + "&lng=" + lng + "&lat=" + lat);
     }
 
@@ -180,9 +189,9 @@ public class Model {
         }
 
     }
-    
+
     void addTypeMachine(String code, String libelle, String img) throws IOException {
-        ws.post("uc=addTypeMachine&code=" + code + "&lib=" + libelle , img);
+        ws.post("uc=addTypeMachine&code=" + code + "&lib=" + libelle, img);
     }
 
     public void changer(String cont) throws IOException {
@@ -229,15 +238,11 @@ public class Model {
     }
 
     void adopterMachineById(String id) throws IOException {
-        ws.get("uc=adopterMachine&id="+id);
-   }
-   
-   void modifierTypeMachine(String lib, String code,String img){
-        try {
-            ws.get("uc=modLibMach&lib="+lib+"&id="+code);
-        } catch (IOException ex) {
-            Logger.getLogger(Model.class.getName()).log(Level.SEVERE, null, ex);
-        }
-   }
+        ws.get("uc=adopterMachine&id=" + id);
+    }
+
+    void modifierTypeMachine(String lib, String code, String img) {
+        ws.get("uc=modLibMach&lib=" + lib + "&id=" + code);
+    }
 
 }
