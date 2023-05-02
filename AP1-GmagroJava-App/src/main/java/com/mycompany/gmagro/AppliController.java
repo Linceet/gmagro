@@ -10,7 +10,9 @@ import com.sothawo.mapjfx.Coordinate;
 import com.sothawo.mapjfx.MapLabel;
 import com.sothawo.mapjfx.MapView;
 import com.sothawo.mapjfx.Marker;
-import java.io.BufferedWriter;
+import java.awt.image.BufferedImage;
+import java.util.Base64;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -23,6 +25,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.embed.swing.SwingFXUtils;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.chart.PieChart;
@@ -34,8 +37,11 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TitledPane;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.util.Callback;
+import javax.imageio.ImageIO;
 import org.json.simple.parser.ParseException;
 
 /**
@@ -478,8 +484,11 @@ public class AppliController implements Initializable {
                                 TypeMachine machine = getTableView().getItems().get(getIndex());
                                 MyDialogModifTM mdmtm = new MyDialogModifTM(m, machine);
                                 mdmtm.showAndWait();
-                                machine.getImg();
-                                m.modifierTypeMachine(machine.getLibelle(), machine.getCode(), machine.getImg());
+                                System.out.println(machine.getImg());
+                                System.out.println("cete limage");
+                                if(mdmtm!=null){
+                                m.modifierTypeMachine(machine.getLibelle(), machine.getCode(),machine.getExt(), machine.getImg());
+                                }
                                 listeMachines.clear();
                                 try {
                                     m.allMachine();
@@ -489,6 +498,35 @@ public class AppliController implements Initializable {
                                 listeMachines = m.getToutesLesMachine();
                             });
                             setGraphic(btn);
+                            setText(null);
+                        }
+                    }
+                };
+                return cell;
+            }
+        };
+        ///////////////////////
+        Callback<TableColumn<TypeMachine, String>, TableCell<TypeMachine, String>> image
+                = //
+                new Callback<TableColumn<TypeMachine, String>, TableCell<TypeMachine, String>>() {
+            @Override
+            public TableCell call(final TableColumn<TypeMachine, String> param) {
+                final TableCell<TypeMachine, String> cell = new TableCell<TypeMachine, String>() {
+
+                    final ImageView iv = new ImageView();
+
+                    @Override
+                    public void updateItem(String item, boolean empty) {
+                        super.updateItem(item, empty);
+                        if (empty) {
+                            setGraphic(null);
+                            setText(null);
+                        } else {
+                            Image img = new Image("http://sio.jbdelasalle.com/~ageneste/gmagrowsjava/img/"+getTableView().getItems().get(getIndex()).getImg());
+                            iv.setImage(img);
+                                    
+                           
+                            setGraphic(iv);
                             setText(null);
                         }
                     }

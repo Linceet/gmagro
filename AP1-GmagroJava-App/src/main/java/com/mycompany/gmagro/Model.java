@@ -180,7 +180,7 @@ public class Model {
         for (int i = 0; i < ar.size(); i++) {
             JSONObject jsono = (JSONObject) ar.get(i);
             String codeM = jsono.get("codeType").toString();
-            String libelle = jsono.get("libelle").toString();
+              String libelle = jsono.get("libelle").toString();
             String cheminImg = jsono.get("cheminPhoto") == null ? null : jsono.get("cheminPhoto").toString();
             String codeE = jsono.get("codeEtab") == null ? null : jsono.get("codeEtab").toString();
             TypeMachine TM = new TypeMachine(codeM, libelle, cheminImg, codeE);
@@ -241,8 +241,12 @@ public class Model {
         ws.get("uc=adopterMachine&id=" + id);
     }
 
-    void modifierTypeMachine(String lib, String code, String img) {
-        ws.get("uc=modLibMach&lib=" + lib + "&id=" + code);
+    void modifierTypeMachine(String lib, String code, String ext ,String img) {
+        try {
+            ws.post(code,lib,img,ext,"uc=modLibMach");
+        } catch (IOException ex) {
+            Logger.getLogger(Model.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
 }

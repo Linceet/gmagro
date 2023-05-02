@@ -22,6 +22,7 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
+import org.json.simple.JSONObject;
 
 /**
  *
@@ -96,7 +97,7 @@ public class WSConnexionHTTPS {
                 .build();
 
         try (
-                 Response response = client.newCall(request).execute()) {
+            Response response = client.newCall(request).execute()) {
             String ret = response.body().string();
             System.out.println("WGRESPONSE: " + ret);
             return ret;
@@ -113,8 +114,23 @@ public class WSConnexionHTTPS {
                 .post(rBody)
                 .build();
         try ( Response response = client.newCall(request).execute()) {
-            return response.body().string();
+            String ret= response.body().string();
+            System.out.println("WGRESPONSE: " + ret);
+            return ret;
         }
+    }
+    
+    public String post(String id, String nom, String img,String ext ,String url) throws IOException {
+        
+        JSONObject obj = new JSONObject();
+
+        
+        obj.put("img", img);
+        obj.put("id", id);
+        obj.put("nom", nom);
+        obj.put("ext",ext);
+        System.out.print(obj);
+        return this.post(url ,obj.toJSONString());
     }
 
 }

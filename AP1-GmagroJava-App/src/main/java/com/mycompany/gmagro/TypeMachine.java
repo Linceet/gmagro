@@ -14,6 +14,7 @@ public class TypeMachine {
     private String adr;
     private String codeEtab;
     private String img;
+    private String ext;
 
     public TypeMachine(String code, String libelle, String adr, String codeEtab) {
         this.code = code;
@@ -61,6 +62,14 @@ public class TypeMachine {
 
     public void setImg(String img) {
         this.img = img;
+    }
+    
+    public void setExt(String ext) {
+        this.ext = ext;
+    }
+    
+    public String getExt() {
+        return ext;
     }
     
     

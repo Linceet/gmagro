@@ -110,11 +110,10 @@
                               </HBox>
                               <TableView fx:id="tvMachine" prefHeight="320.0" prefWidth="801.0">
                                 <columns>
-                                  <TableColumn fx:id="TableColumnImage" prefWidth="240.0" text="Image" />
-                                  <TableColumn fx:id="tableColumnLib" minWidth="0.0" prefWidth="177.0" text="Machine" />
-                                    <TableColumn fx:id="tableColumnAdopter" minWidth="0.0" prefWidth="125.0" text="Adopter" />
-                                    <TableColumn fx:id="tableColumnModifierTM" minWidth="0.0" prefWidth="117.0" text="Modifier" />
-                                    <TableColumn fx:id="tableColumnSupprimerTM" minWidth="0.0" prefWidth="139.0" text="Supprimer" />
+                                    <TableColumn fx:id="tableColumnLib" minWidth="0.0" prefWidth="350.0" text="Machine" />
+                                    <TableColumn fx:id="tableColumnAdopter" minWidth="0.0" prefWidth="175.0" text="Adopter" />
+                                    <TableColumn fx:id="tableColumnModifierTM" minWidth="0.0" prefWidth="127.0" text="Modifier" />
+                                    <TableColumn fx:id="tableColumnSupprimerTM" minWidth="0.0" prefWidth="149.0" text="Supprimer" />
                                 </columns>
                               </TableView>
                               <Button fx:id="AddMachine" mnemonicParsing="false" onMouseClicked="#ClicAddMachine" text="Ajouter une machine" />

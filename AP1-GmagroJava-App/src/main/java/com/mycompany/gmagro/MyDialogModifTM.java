@@ -4,6 +4,7 @@
  */
 package com.mycompany.gmagro;
 
+import java.io.ByteArrayOutputStream;
 import javafx.scene.image.Image;
 import java.io.File;
 import java.io.FileInputStream;
@@ -33,11 +34,16 @@ class MyDialogModifTM extends Dialog<TypeMachine> {
         this.setTitle("Modifier");
         this.setHeaderText("Modification des types machines");
         this.setResizable(true);
-
-        ImageView iv = new ImageView();
-        iv.setFitHeight(200);
-        iv.setFitWidth(200);
-
+        ImageView iv ;
+        if(machine.getAdr()!=null){
+            iv = new ImageView("http://sio.jbdelasalle.com/~ageneste/gmagrowsjava/img/"+machine.getAdr());
+            iv.setFitHeight(200);
+            iv.setFitWidth(200);
+        }else{
+            iv = new ImageView();
+            iv.setFitHeight(200);
+            iv.setFitWidth(200);
+        }
         Label labelLib = new Label("Nouveau nom de la machine:  ");
         TextField textLib = new TextField(machine.getLibelle());
         Button btnFileImage = new Button("selectionner une image");
@@ -58,20 +64,40 @@ class MyDialogModifTM extends Dialog<TypeMachine> {
             if (fi != null) {
                 try {
                     String imgB64;
+                    ByteArrayOutputStream out;
+                        int bufLength = 2048;
+                        byte[] buffer = new byte[2048];
+                        byte[] data;
+                        
                     try (FileInputStream fin = new FileInputStream(fi)) {
-                        iv.setImage(new Image(fin));
-                        byte[] FileB64 = new byte[(int)fi.length()];
-                        fin.read(FileB64);
-                        fin.read(FileB64);
-                        imgB64 = Base64.getEncoder().encodeToString(FileB64);
+                       // iv.setImage(new Image(fin));
+                        
+                        
+
+                        out = new ByteArrayOutputStream();
+                        int readLength;
+                        while ((readLength = fin.read(buffer, 0, bufLength)) != -1) {
+                            out.write(buffer, 0, readLength);
+                        }
+
+                        data = out.toByteArray();
+                        imgB64 = Base64.getEncoder().withoutPadding().encodeToString(data);
+                        machine.setImg(imgB64);
+                        //String[] s = fi.getName().split(".");
+                        machine.setExt("jpg");
+                        out.close();
+                        fin.close();
+                        FileInputStream fin2 = new FileInputStream(fi);
+                        iv.setImage(new Image(fin2));
+                        fin2.close();
+                        
                     }
-                    machine.setImg(imgB64);
-                    System.out.println("HEEEEEEEEEEEERRRRRRRRRRRRRRRRRRRRRRRRRREEEEEEEEEEEEEE");
-                } catch (FileNotFoundException ex) {
-                    Logger.getLogger(MyDialogModifTM.class.getName()).log(Level.SEVERE, null, ex);
+                    
+                    System.out.println("image: "+imgB64);
                 } catch (IOException ex) {
                     Logger.getLogger(MyDialogModifTM.class.getName()).log(Level.SEVERE, null, ex);
                 }
+                
             }
         });
 
